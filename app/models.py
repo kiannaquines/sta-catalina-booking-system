@@ -81,7 +81,8 @@ class ReservationModel(models.Model):
         max_length=255, choices=RESERVATION_TYPE, help_text="Reservation type"
     )
     reservation_status = models.CharField(
-        max_length=255, default="Pending", choices=RESERVATION_STATUS
+        max_length=255, default="Pending", choices=RESERVATION_STATUS,
+        help_text="Reservation status"
     )
     date_added = models.DateTimeField(auto_now_add=True)
 

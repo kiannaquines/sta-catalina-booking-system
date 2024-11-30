@@ -13,6 +13,7 @@
     <link href="{ %static 'lib/flag-icon-css/css/flag-icon.min.css' %}" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/azia.css' %}">
     <link href="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.1.8/b-3.2.0/b-colvis-3.2.0/b-html5-3.2.0/b-print-3.2.0/datatables.min.css" rel="stylesheet">
+    {% block specific_css %}{% endblock %}
     <style>
       thead tr th {
         padding: 10px !important;

@@ -41,8 +41,8 @@
                             {% endif %}
                         </td>
                         <td>
-                            <span class="badge bg-{% if item.is_cancelled %}warning{% endif %} text-white">
-                                {% if item.is_cancelled %}Cancelled{% endif %}
+                            <span class="badge bg-warning text-white">
+                                {{ item.reservation_status }}
                             </span>
                         </td>
                     </tr>

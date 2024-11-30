@@ -5,7 +5,6 @@ urlpatterns = [
     path('', LoginView.as_view(),name="login"),
     path('register/', RegisterView.as_view(),name="register"),
     path('register/profile', ProfileFormView.as_view(),name="profile_registration"),
-    path('dashboard/', DashboardView.as_view(),name="dashboard"),
     path('user/logout/', logout_me, name="logout_me"),
 
     # Reservation

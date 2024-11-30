@@ -78,7 +78,7 @@ class LoginView(View):
                     elif user.user_type == "Driver":
                         return redirect("driver_page")
                     else:
-                        return redirect(reverse('dashboard'))
+                        return redirect(reverse('reservation'))
             
             messages.error(request, 'Invalid credentials or account still inactive.', extra_tags="danger")
 
@@ -127,16 +127,6 @@ class RegisterView(View):
 
                 context['form'] = signup_form
                 return render(request, self.template_name, context)
-
-
-class DashboardView(CustomLoginRequiredMixin, View):
-    template_name = "dashboard.html"
-
-    def get(self, request):
-        return render(request, self.template_name)
-
-    def post(self, request):
-        pass
 
 
 class ReservationView(CustomLoginRequiredMixin, ListView):

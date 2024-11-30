@@ -134,6 +134,9 @@ class ReservationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["is_delivered"].label = "Delivery Status"
+        self.fields['date_reserved'].label = 'Date'
+        if 'location' in self.fields:
+            self.fields['location'].widget.attrs['readonly'] = True
 
         for field in self.fields.values():
             if isinstance(field.widget, forms.CheckboxInput):
@@ -156,8 +159,10 @@ class ReservationForm(forms.ModelForm):
         widgets = {
             "date_reserved": forms.DateInput(
                 attrs={"type": "text", "placeholder": "MM/DD/YYYY"}
-            )
+            ),
+            'location': forms.TextInput(attrs={'readonly':'readonly'})
         }
+        
 
 
 class TruckForm(forms.ModelForm):

@@ -9,6 +9,8 @@ from regular.forms import MyReservationForm
 from django.contrib import messages
 from app.mixins import CustomLoginRequiredMixin
 from django.urls import reverse_lazy
+from django.db.models import Q
+
 
 class RegularView(CustomLoginRequiredMixin, View):
     template_name = "regular_index.html"
@@ -16,10 +18,12 @@ class RegularView(CustomLoginRequiredMixin, View):
     def get(self, request):
         context = {}
         context["reservations"] = ReservationModel.objects.filter(
-            reserved_by=request.user,
-            is_cancelled=False,
+            Q(reserved_by=request.user),
+            Q(reservation_status=ReservationModel.RESERVATION_STATUS[1][0])
+            | Q(reservation_status=ReservationModel.RESERVATION_STATUS[0][0]),
         )
         return render(request, self.template_name, context)
+
 
 class CancelledRegularView(CustomLoginRequiredMixin, View):
     template_name = "cancelled_reservation.html"
@@ -28,12 +32,13 @@ class CancelledRegularView(CustomLoginRequiredMixin, View):
         context = {}
         context["reservations"] = ReservationModel.objects.filter(
             reserved_by=request.user,
-            is_cancelled=True,
+            reservation_status=ReservationModel.RESERVATION_STATUS[2][0],
         )
         return render(request, self.template_name, context)
 
+
 class ReservedBookingView(CustomLoginRequiredMixin, CreateView):
-    template_name = 'regular_add.html'
+    template_name = "regular_add.html"
     model = ReservationModel
     form_class = MyReservationForm
     success_url = reverse_lazy("regular_page")
@@ -55,8 +60,8 @@ class ReservedBookingView(CustomLoginRequiredMixin, CreateView):
 
 
 class UpdateReservation(CustomLoginRequiredMixin, UpdateView):
-    pk_url_kwarg = 'reservation_id'
-    template_name = 'regular_update.html'
+    pk_url_kwarg = "reservation_id"
+    template_name = "regular_update.html"
     model = ReservationModel
     form_class = MyReservationForm
     success_url = reverse_lazy("regular_page")
@@ -76,9 +81,10 @@ class UpdateReservation(CustomLoginRequiredMixin, UpdateView):
                 messages.error(self.request, error, extra_tags="danger")
         return super().form_invalid(form)
 
+
 class DeleteReservationView(CustomLoginRequiredMixin, DeleteView):
-    pk_url_kwarg = 'reservation_id'
-    template_name = 'regular_delete.html'
+    pk_url_kwarg = "reservation_id"
+    template_name = "regular_delete.html"
     model = ReservationModel
     success_url = reverse_lazy("regular_page")
 
@@ -99,10 +105,12 @@ class DeleteReservationView(CustomLoginRequiredMixin, DeleteView):
 
 class CancelReservationView(CustomLoginRequiredMixin, View):
     def get(self, request, reservation_id):
-        reservation = ReservationModel.objects.filter(id=reservation_id, reserved_by=request.user)
+        reservation = ReservationModel.objects.filter(
+            id=reservation_id, reserved_by=request.user
+        )
         if reservation:
             reservation.update(
-                is_cancelled=True,
+                reservation_status=ReservationModel.RESERVATION_STATUS[2][0]
             )
             messages.success(
                 self.request,
