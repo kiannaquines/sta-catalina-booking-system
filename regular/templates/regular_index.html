@@ -39,12 +39,17 @@
                                 {% if item.is_delivered %}Delivered{% else %}Pending Delivery{% endif %}
                             </span>
                         </td>
-                        <td><b>{{ item.truck.driver.get_full_name }}</b> - {{ item.truck.plate_number }}</td>
+                        <td>
+                            {% if not item.truck.driver.get_full_name == '' %}
+                            <span class="badge bg-primary text-white">Waiting for staff to assign driver</span>
+                            {% else %}
+                            <b>{{ item.truck.driver.get_full_name }}</b> - {{ item.truck.plate_number }}</td>
+                            {% endif %}
                         <th>
-                            <a href="{% url 'update_reservation' reservation_id=item.id %}">
+                            <a href="{% url 'regular_page_reservation_update' reservation_id=item.id %}">
                                 <i class="typcn typcn-edit action-icon" style="font-size: 20px;"></i>
                             </a>
-                            <a href="{% url 'delete_reservation' reservation_id=item.id %}">
+                            <a href="{% url 'regular_page_reservation_remove' reservation_id=item.id %}">
                                 <i class="typcn typcn-trash action-icon"></i>
                             </a>
                         </th>

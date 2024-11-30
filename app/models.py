@@ -73,8 +73,11 @@ class ReservationModel(models.Model):
         limit_choices_to={"driver__user_type": "Driver"},
         on_delete=models.CASCADE,
         help_text="Truck to deliver",
+        blank=True,
+        null=True
     )
     date_reserved = models.DateField(auto_now_add=False, help_text="Date reserved")
+    is_cancelled = models.BooleanField(default=False, help_text="Cancelled reservation status")
     reservation_type = models.CharField(
         max_length=255, choices=RESERVATION_TYPE, help_text="Reservation type"
     )
