@@ -74,7 +74,7 @@ class ReservationModel(models.Model):
         on_delete=models.CASCADE,
         help_text="Truck to deliver",
     )
-    date_reserved = models.DateTimeField(auto_now_add=False, help_text="Date reserved")
+    date_reserved = models.DateField(auto_now_add=False, help_text="Date reserved")
     reservation_type = models.CharField(
         max_length=255, choices=RESERVATION_TYPE, help_text="Reservation type"
     )

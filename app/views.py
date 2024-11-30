@@ -70,7 +70,15 @@ class LoginView(View):
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    return redirect(reverse('dashboard'))
+
+                    if user.user_type == "Regular User":
+                        return redirect("regular_page")
+                    elif user.user_type == "Manager":
+                        return redirect("manager_page")
+                    elif user.user_type == "Driver":
+                        return redirect("driver_page")
+                    else:
+                        return redirect(reverse('dashboard'))
             
             messages.error(request, 'Invalid credentials or account still inactive.', extra_tags="danger")
 

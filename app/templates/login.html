@@ -5,7 +5,7 @@
     <div class="az-card-signin" style="height: 470px !important;">
         <div class="az-signin-header">
             <h2>Authentication</h2>
-            <form method="POST" class="mt-5">
+            <form method="POST" class="mt-4">
                 {% csrf_token %}
                 {% for input in form %}
                   <div class="form-group">
@@ -23,7 +23,7 @@
         {% endfor %}
         <div class="az-signin-footer">
             <p>Don't have an account?
-                <a href="{% url 'register' %}">Create an Account</a>
+                <a href="{% url 'register' %}">Create Account</a>
             </p>
         </div>
     </div>

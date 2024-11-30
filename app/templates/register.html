@@ -5,7 +5,7 @@
     <div class="az-card-signin" style="height: 660px !important;">
         <div class="az-signin-header">
           <h2>Create Account</h2>
-          <form method="POST">
+          <form method="POST" class="mt-4">
             {% csrf_token %}
             {% for input in form %}
             <div class="form-group">
@@ -17,9 +17,9 @@
           </form>
         </div>
         {% for message in messages %}
-        <script>
-          alert('{{ message }}')
-        </script>
+        <div class="alert alert-{{ message.extra_tags }} mt-2">
+           {{ message }}
+        </div>
         {% endfor %}
         <div class="az-signin-footer">
             <p>

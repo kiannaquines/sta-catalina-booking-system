@@ -34,13 +34,12 @@
     <div class="az-content az-content-dashboard">
       <div class="container">
         <div class="az-content-body">
-          {% include './driver_message.html' %}
           {% block content %}{% endblock %}
         </div>
       </div>
     </div>
 
-    {% include './driver_footer.html' %}
+    {% include './footer.html' %}
 
     <script src="{% static 'lib/jquery/jquery.min.js' %}"></script>
     <script src="{% static 'lib/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
