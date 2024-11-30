@@ -1,0 +1,189 @@
+{% extends './includes/driver_base.html' %}
+
+{% block specific_css %}
+<link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="az-content-breadcrumb">
+    <span>Dashboard</span>
+    <span>Info</span>
+    <span>Reservation Detail</span>
+
+</div>
+<h2 class="az-content-title">Reservation Detail</h2>
+{% include './includes/driver_message.html' %}
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-3">
+                <form>
+                    <div class="form-group">
+                        <label>Reserved by</label>
+                        <input type="text" name="reserved_by" id="reserved_by" value="{{ reservation.reserved_by.get_full_name }}" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Contact</label>
+                        <input type="text" name="contact" id="contact" value="{{ reservation.reserved_by.phone_number }}" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Product</label>
+                        <input type="text" name="product_name" id="product_name" value="{{ reservation.product_name }}" class="form-control">
+                    </div>
+
+                    
+                    <div class="form-group">
+                        <label>Date Reserved</label>
+                        <input type="text" name="date_reserved" id="date_reserved" value="{{ reservation.date_reserved }}" class="form-control">
+                    </div>
+                    
+                    <div class="form-group">
+                        <input type="text" name="location" id="location" value="{{ reservation.location }}" class="form-control" readonly hidden>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <a class="btn btn-az-primary"  onclick="confirmationAlert()" href="{% url 'driver_delivered_page' reservation_id=reservation.id %}">Delivered</a>
+                        <a class="btn btn-az-secondary" href="{% url 'driver_page' %}">Back</a>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-9">
+                <div id="map" style="width: 100%; height: 100%;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block specific_js %}
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+<script>
+
+    function confirmationAlert() {
+        if(!confirm('Are you sure you already delivered the product?')) {
+            event.preventDefault();
+        }
+    }
+
+    let reservationLatitude, reservationLongitude;
+
+    const reservationLocation = document.querySelector("#location").value.split(',');
+    reservationLongitude = parseFloat(reservationLocation[0].trim());
+    reservationLatitude = parseFloat(reservationLocation[1].trim());
+
+    function enableLocation() {
+        return new Promise((resolve, reject) => {
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        resolve({
+                            latitude: position.coords.latitude,
+                            longitude: position.coords.longitude
+                        });
+                    },
+                    (error) => {
+                        const errorMessages = {
+                            1: "Permission denied. Please enable location access.",
+                            2: "Location unavailable.",
+                            3: "Request timed out. Try again."
+                        };
+                        reject(errorMessages[error.code] || "An unknown error occurred.");
+                    }
+                );
+            } else {
+                reject("Geolocation is not supported by your browser.");
+            }
+        });
+    }
+
+    function locationRoute(latitude, longitude) {
+        mapboxgl.accessToken = 'pk.eyJ1IjoibmlraWUwMiIsImEiOiJjbTA5cTg4dHgxemwxMmpzaGpobno2bWczIn0.pA7T9PP1LMbliVaOCwhJRA';
+        const map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/satellite-streets-v12',
+            center: [reservationLongitude, reservationLatitude],
+            zoom: 14
+        });
+
+        new mapboxgl.Marker({ color: 'red' })
+            .setLngLat([reservationLongitude, reservationLatitude])
+            .addTo(map);
+
+        new mapboxgl.Marker({ color: 'blue' })
+            .setLngLat([longitude, latitude])
+            .addTo(map);
+
+        const bounds = new mapboxgl.LngLatBounds()
+            .extend([reservationLongitude, reservationLatitude])
+            .extend([longitude, latitude]);
+        map.fitBounds(bounds, { padding: 50 });
+
+        const directionsRequest = `https://api.mapbox.com/directions/v5/mapbox/driving/${longitude},${latitude};${reservationLongitude},${reservationLatitude}?geometries=geojson&access_token=${mapboxgl.accessToken}`;
+
+        fetch(directionsRequest)
+            .then(response => response.json())
+            .then(data => {
+                const route = data.routes[0].geometry.coordinates;
+                const geojson = {
+                    type: 'Feature',
+                    properties: {},
+                    geometry: {
+                        type: 'LineString',
+                        coordinates: route
+                    }
+                };
+
+                map.on('load', () => {
+                    map.addSource('route', {
+                        type: 'geojson',
+                        data: geojson
+                    });
+
+                    map.addLayer({
+                        id: 'route',
+                        type: 'line',
+                        source: 'route',
+                        layout: {
+                            'line-join': 'round',
+                            'line-cap': 'round'
+                        },
+                        paint: {
+                            'line-color': '#3887be',
+                            'line-width': 5
+                        }
+                    });
+
+                    map.flyTo({
+                        center: [(longitude + reservationLongitude) / 2, (latitude + reservationLatitude) / 2],
+                        zoom: 14,
+                        speed: 0.5,
+                        bearing: -20,
+                        pitch: 60,
+                        curve: 3,
+                        easing: t => t,
+                        duration: 5000
+                    });
+
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching directions:', error);
+            });
+    }
+
+    function initializeMap() {
+        enableLocation()
+            .then(location => {
+                locationRoute(location.latitude, location.longitude);
+            })
+            .catch(error => {
+                alert(error);
+            });
+    }
+
+    initializeMap();
+</script>
+
+{% endblock %}

@@ -1,5 +1,70 @@
 {% extends './includes/driver_base.html' %}
 
-{% block content %}
 
+{% block content %}
+<div class="az-content-breadcrumb">
+    <span>Dashboard</span>
+    <span>Tables</span>
+    <span>Assigned Reservations</span>
+</div>
+<h2 class="az-content-title">Assigned Reservations</h2>
+<div class="az-content-label mg-b-5">Assigned Reservation Table</div>
+<p class="mg-b-20">Assigned reservation information.</p>
+{% include './includes/driver_message.html' %}
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table" id="dataTable">
+                <thead>
+                    <tr>
+                        <th>Fullname</th>
+                        <th>Name</th>
+                        <th>Product</th>
+                        <th>Reservation</th>
+                        <th>Delivery Status</th>
+                        <th>Date Reserved</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in reservations %}
+                    <tr>
+                        <th>{{ item.reserved_by.get_full_name }}</th>
+                        <td>
+                            <b>{{ item.truck.driver.get_full_name }}</b>
+                            - {{ item.truck.plate_number }}
+                        </td>
+                        <th>{{ item.product_name }}</th>
+                        <td>
+                            <span class="badge bg-primary text-white">{{ item.reservation_type }}</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-{% if item.is_delivered %}primary{% else %}warning{% endif %} text-white">
+                                {% if item.is_delivered %}Delivered{% else %}Pending Delivery{% endif %}
+                            </span>
+                        </td>
+                        <th>{{ item.date_reserved }}</th>
+                        <th>
+                            <a onclick="confirmationAlert()" href="{% url 'driver_delivered_page' reservation_id=item.id %}">
+                                <i class="typcn typcn-edit action-icon" style="font-size: 20px;"></i>
+                            </a>
+                            <a href="{% url 'driver_route_page' reservation_id=item.id %}">
+                                <i class="typcn typcn-location-outline action-icon" style="font-size: 20px;"></i>
+                            </a>
+                        </th>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</div>
+<script>
+    function confirmationAlert() {
+        if(!confirm('Are you sure you already delivered the product?')) {
+            event.preventDefault();
+        }
+    }
+</script>
 {% endblock %}

@@ -11,9 +11,12 @@
 <div class="az-content-label mg-b-5">Reservation Report Table</div>
 <p class="mg-b-20">Export reservation report information.</p>
 
+{% include './../includes/message.html' %}
+
+
 <div class="card mb-3">
     <div class="card-body">
-        <form action="{% url 'reservation_export_report' %}" method="post">
+        <form action="{% url 'reservation_export_report' %}" method="POST">
             {% csrf_token %}
             <div class="row">
                 <div class="col">

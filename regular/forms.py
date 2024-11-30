@@ -20,6 +20,9 @@ class MyReservationForm(forms.ModelForm):
         model = ReservationModel
         fields = "__all__"
         widget = {
-            'location': forms.TextInput(attrs={'readonly':'readonly'})
+            'location': forms.TextInput(attrs={'readonly':'readonly'}),
+            "date_reserved": forms.DateInput(
+                attrs={"type": "text", "placeholder": "MM/DD/YYYY"}
+            ),
         }
         exclude = ["reserved_by","reservation_status","is_delivered","truck","is_cancelled"]

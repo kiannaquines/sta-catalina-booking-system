@@ -1,0 +1,45 @@
+{% extends './../includes/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="az-content-breadcrumb">
+    <span>Dashboard</span>
+    <span>Tables</span>
+    <span>Comfirm Reservation</span>
+</div>
+<h2 class="az-content-title">Comfirm Reservations</h2>
+<div class="az-content-label mg-b-5">Comfirm Reservation Table</div>
+<p class="mg-b-20">Comfirm reservation information.</p>
+{% include './../includes/message.html' %}
+<div class="card">
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            {% for input in form %}
+                {% if input.id_for_label == 'id_is_delivered' %}
+                <label class="ckbox form-label mt-2 mb-3">
+                    {{ input }}<span>{{ input.label }}</span>
+                  </label>
+                {% elif input.id_for_label == 'id_date_reserved' %}
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                      <div class="input-group-text">
+                        {{ input.label }}
+                      </div>
+                    </div>
+                    {{ input }}
+                  </div>
+                {% else %}
+               <div class="form-group">
+                    <label for="{{ input.id_for_label }}" class="form-label">{{ input.label }}</label>
+                    {{ input }}
+                    <small class="text-muted">{{ input.help_text }}</small>
+               </div>
+               {% endif %}
+            {% endfor %}
+            <button class="btn btn-az-primary w-50 mt-3">Comfirm Reservation</button>
+        </form>
+    </div>
+</div>
+</div>
+{% endblock %}

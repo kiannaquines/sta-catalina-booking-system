@@ -108,7 +108,21 @@ class CancelReservationView(CustomLoginRequiredMixin, View):
         reservation = ReservationModel.objects.filter(
             id=reservation_id, reserved_by=request.user
         )
+
         if reservation:
+
+            if ReservationModel.objects.filter(
+                id=reservation_id,
+                reserved_by=request.user,
+                reservation_status=ReservationModel.RESERVATION_STATUS[1][0],
+            ).first():
+                messages.error(
+                    self.request,
+                    "You cannot cancel a confirmed reservation.",
+                    extra_tags="danger",
+                )
+                return HttpResponseRedirect(reverse("regular_page"))
+
             reservation.update(
                 reservation_status=ReservationModel.RESERVATION_STATUS[2][0]
             )

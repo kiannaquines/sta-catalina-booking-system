@@ -130,6 +130,31 @@ class UpdateUserForm(forms.ModelForm):
         ]
 
 
+
+class ConfirmReservationForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['date_reserved'].label = 'Date'
+        
+        for field in self.fields.values():
+            if isinstance(field.widget, forms.CheckboxInput):
+                field.widget.attrs.update({"class": ""})
+            else:
+                field.widget.attrs.update({"class": "form-control"})
+
+    class Meta:
+        model = ReservationModel
+        fields = [
+            "reservation_status",
+            "date_reserved",
+        ]
+        widgets = {
+            "date_reserved": forms.DateInput(
+                attrs={"type": "text", "placeholder": "MM/DD/YYYY"}
+            ),
+        }
+
+
 class ReservationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

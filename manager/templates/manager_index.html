@@ -1,5 +1,78 @@
 {% extends './includes/manager_base.html' %}
 
-{% block content %}
 
+{% block content %}
+<div class="az-content-breadcrumb">
+    <span>Dashboard</span>
+    <span>Tables</span>
+    <span>Reservations Report</span>
+</div>
+<h2 class="az-content-title">Reservations Report</h2>
+<div class="az-content-label mg-b-5">Reservation Report Table</div>
+<p class="mg-b-20">Export reservation report information.</p>
+
+{% include './includes/message.html' %}
+
+
+<div class="card mb-3">
+    <div class="card-body">
+        <form action="{% url 'reservation_export_report' %}" method="POST">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col">
+                    <label for="start_date" class="form-label">Start Date</label>
+                    <input type="date" name="start_date" id="start_date" class="form-control">
+                </div>
+                <div class="col">
+                    <label for="end_date" class="form-label">Start Date</label>
+                    <input type="date" name="end_date" id="end_date" class="form-control">
+                </div>
+                <div class="col">
+                    <label for="" class="form-label text-white">Submit</label>
+                    <button type="submit" class="btn btn-az-primary btn-block">Export Reservation Report</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table" id="dataTable">
+                <thead>
+                    <tr>
+                        <th>Fullname</th>
+                        <th>Name</th>
+                        <th>Product</th>
+                        <th>Reservation</th>
+                        <th>Delivery Status</th>
+                        <th>Date Reserved</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in reservations %}
+                    <tr>
+                        <th>{{ item.reserved_by.get_full_name }}</th>
+                        <td>
+                            <b>{{ item.truck.driver.get_full_name }}</b> - {{ item.truck.plate_number }}
+                        </td>
+                        <th>{{ item.product_name }}</th>
+                        <td>
+                            <span class="badge bg-primary text-white">{{ item.reservation_type }}</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-{% if item.is_delivered %}primary{% else %}warning{% endif %} text-white">
+                                {% if item.is_delivered %}Delivered{% else %}Pending Delivery{% endif %}
+                            </span>
+                        </td>
+                        <th>{{ item.date_reserved }}</th>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</div>
 {% endblock %}

@@ -16,6 +16,7 @@ urlpatterns = [
     path('reservation/update/<int:reservation_id>', UpdateReservationView.as_view(),name="update_reservation"),
     path('reservation/delete/<int:reservation_id>', DeleteReservationView.as_view(),name="delete_reservation"),
     path('reservation/export/report', generate_report,name="reservation_export_report"),
+    path('reservation/confirm/<int:reservation_id>', ConfirmReservationView.as_view(),name="reservation_confirm"),
 
     # Truck
     path('truck/', TruckView.as_view(),name="truck"),

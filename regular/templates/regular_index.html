@@ -40,7 +40,7 @@
                             </span>
                         </td>
                         <td>
-                            {% if not item.truck.driver.get_full_name == '' %}
+                            {% if item.truck.driver.get_full_name == '' %}
                             <span class="badge bg-primary text-white">Waiting for staff to assign driver</span>
                             {% else %}
                             <b>{{ item.truck.driver.get_full_name }}</b> - {{ item.truck.plate_number }}</td>

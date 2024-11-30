@@ -1,3 +1,4 @@
+from typing import Any
 from django.contrib import messages
 from django.forms import BaseModelForm
 from django.http import HttpResponse, HttpResponseRedirect
@@ -5,6 +6,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import View, ListView, UpdateView, CreateView, DeleteView
 from app.forms import (
+    ConfirmReservationForm,
     ProfileForm,
     ReservationForm,
     SignupForm,
@@ -156,6 +158,21 @@ class RegisterView(View):
                 return render(request, self.template_name, context)
 
 
+class ConfirmReservationView(CustomLoginRequiredMixin, UpdateView):
+    pk_url_kwarg = 'reservation_id'
+    template_name = "update_template/confirm_reservation.html"
+    model = ReservationModel
+    form_class = ConfirmReservationForm
+    success_url = reverse_lazy("reservation")
+
+    def form_valid(self, form: BaseModelForm) -> HttpResponse:
+        return super().form_valid(form)
+    
+
+    def form_invalid(self, form: BaseModelForm) -> HttpResponse:
+        return super().form_invalid(form)
+
+
 class ReservationView(CustomLoginRequiredMixin, ListView):
     template_name = "views_template/reservation_view.html"
     model = ReservationModel
@@ -166,6 +183,11 @@ class ReservationReportView(CustomLoginRequiredMixin, ListView):
     template_name = "views_template/report_view.html"
     model = ReservationModel
     context_object_name = "reservations"
+
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context["reservations"] = ReservationModel.objects.all()
+        return super().get_context_data(**kwargs)
 
 
 class ConfirmedReservationView(CustomLoginRequiredMixin, ListView):
@@ -455,8 +477,10 @@ def generate_report(request):
             else end_date
         )
 
+        print('Date: ', start_date, end_date)
+
         query_reservation = ReservationModel.objects.filter(
-            date_added__range=[start_date, end_date],
+            date_reserved__range=[start_date, end_date],
         ).order_by("-reserved_by__first_name")
 
         if not query_reservation.exists():

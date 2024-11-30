@@ -1,57 +1,48 @@
-{% extends './../includes/base.html' %}
+{% extends './includes/driver_base.html' %}
 
 
 {% block content %}
 <div class="az-content-breadcrumb">
     <span>Dashboard</span>
     <span>Tables</span>
-    <span>Reservations</span>
+    <span>Delivered Reservations</span>
 </div>
-<h2 class="az-content-title">Reservations</h2>
-<div class="az-content-label mg-b-5">Reservation Table</div>
-<p class="mg-b-20">Manage reservation information.</p>
-{% include './../includes/message.html' %}
+<h2 class="az-content-title">Delivered Reservations</h2>
+<div class="az-content-label mg-b-5">Delivered Reservation Table</div>
+<p class="mg-b-20">Delivered reservation information.</p>
+{% include './includes/driver_message.html' %}
 <div class="card">
     <div class="card-body">
         <div class="table-responsive">
             <table class="table" id="dataTable">
                 <thead>
                     <tr>
-                        <th>Reserved by</th>
+                        <th>Fullname</th>
+                        <th>Name</th>
                         <th>Product</th>
                         <th>Reservation</th>
-                        <th>Date Reserved</th>
                         <th>Delivery Status</th>
-                        <th>Driver information</th>
-                        <th>Action</th>
+                        <th>Date Reserved</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for item in reservations %}
                     <tr>
                         <th>{{ item.reserved_by.get_full_name }}</th>
+                        <td>
+                            <b>{{ item.truck.driver.get_full_name }}</b>
+                            - {{ item.truck.plate_number }}
+                        </td>
                         <th>{{ item.product_name }}</th>
                         <td>
                             <span class="badge bg-primary text-white">{{ item.reservation_type }}</span>
                         </td>
-                        <th>{{ item.date_reserved }}</th>
                         <td>
                             <span class="badge bg-{% if item.is_delivered %}primary{% else %}warning{% endif %} text-white">
                                 {% if item.is_delivered %}Delivered{% else %}Pending Delivery{% endif %}
                             </span>
                         </td>
-                        <td><b>{{ item.truck.driver.get_full_name }}</b> - {{ item.truck.plate_number }}</td>
-                        <th>
-                            <a href="{% url 'reservation_confirm' reservation_id=item.id %}">
-                                <i class="typcn typcn-document-text action-icon" style="font-size: 20px;"></i>
-                            </a>
-                            <a href="{% url 'update_reservation' reservation_id=item.id %}">
-                                <i class="typcn typcn-edit action-icon" style="font-size: 20px;"></i>
-                            </a>
-                            <a href="{% url 'delete_reservation' reservation_id=item.id %}">
-                                <i class="typcn typcn-trash action-icon"></i>
-                            </a>
-                        </th>
+                        <th>{{ item.date_reserved }}</th>
                     </tr>
                     {% endfor %}
                 </tbody>

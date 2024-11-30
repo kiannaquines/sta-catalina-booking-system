@@ -32,14 +32,14 @@
                         <th>{{ item.phone_number }}</th>
                         <th>{{ item.user_type }}</th>
                         <th>{{ item.date_joined }}</th>
-                        <td>
-                            <a href="">
+                        <th>
+                            <a href="{% url 'user_update' user_id=item.id %}">
                                 <i class="typcn typcn-edit action-icon" style="font-size: 20px;"></i>
                             </a>
-                            <a href="">
+                            <a href="{% url 'user_delete' user_id=item.id %}">
                                 <i class="typcn typcn-trash action-icon"></i>
                             </a>
-                        </td>
+                        </th>
                     </tr>
                     {% endfor %}
                 </tbody>
