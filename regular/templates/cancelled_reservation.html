@@ -1,0 +1,56 @@
+{% extends './includes/regular_base.html' %}
+
+{% block content %}
+<div class="az-content-breadcrumb">
+    <span>Dashboard</span>
+    <span>Tables</span>
+    <span>Cancelled Reservations</span>
+</div>
+<h2 class="az-content-title">Cancelled Reservations</h2>
+<div class="az-content-label mg-b-5">Cancelled Reservation Table</div>
+<p class="mg-b-20">Cancelled reservation information.</p>
+{% include './includes/regular_message.html' %}
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table" id="dataTable">
+                <thead>
+                    <tr>
+                        <th>Reserved by</th>
+                        <th>Product</th>
+                        <th>Reservation</th>
+                        <th>Date Reserved</th>
+                        <th>Driver information</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in reservations %}
+                    <tr>
+                        <th>{{ item.reserved_by.get_full_name }}</th>
+                        <th>{{ item.product_name }}</th>
+                        <td>
+                            <span class="badge bg-primary text-white">{{ item.reservation_type }}</span>
+                        </td>
+                        <th>{{ item.date_reserved }}</th>
+                        <td>
+                            {% if not item.truck.driver.get_full_name == '' %}
+                                <span class="badge bg-primary text-white">Waiting for staff to assign driver</span>
+                            {% else %}
+                                <b>{{ item.truck.driver.get_full_name }}</b> - {{ item.truck.plate_number }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge bg-{% if item.is_cancelled %}warning{% endif %} text-white">
+                                {% if item.is_cancelled %}Cancelled{% endif %}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}

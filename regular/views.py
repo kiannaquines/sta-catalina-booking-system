@@ -1,5 +1,5 @@
 from django.forms import BaseModelForm
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.views import View
 from django.views.generic import CreateView, UpdateView, DeleteView
@@ -16,13 +16,21 @@ class RegularView(CustomLoginRequiredMixin, View):
     def get(self, request):
         context = {}
         context["reservations"] = ReservationModel.objects.filter(
-            reserved_by=request.user
+            reserved_by=request.user,
+            is_cancelled=False,
         )
         return render(request, self.template_name, context)
 
-    def post(self, request):
-        pass
+class CancelledRegularView(CustomLoginRequiredMixin, View):
+    template_name = "cancelled_reservation.html"
 
+    def get(self, request):
+        context = {}
+        context["reservations"] = ReservationModel.objects.filter(
+            reserved_by=request.user,
+            is_cancelled=True,
+        )
+        return render(request, self.template_name, context)
 
 class ReservedBookingView(CustomLoginRequiredMixin, CreateView):
     template_name = 'regular_add.html'
@@ -34,7 +42,7 @@ class ReservedBookingView(CustomLoginRequiredMixin, CreateView):
         form.instance.reserved_by = self.request.user
         messages.success(
             self.request,
-            "You have successfully added a new reservation.",
+            "You have successfully added a new reservation, you will get a notification when staff assigned a driver to your reservation.",
             extra_tags="success",
         )
         return super().form_valid(form)
@@ -89,5 +97,22 @@ class DeleteReservationView(CustomLoginRequiredMixin, DeleteView):
         return super().form_invalid(form)
 
 
-class CancelReservation(CustomLoginRequiredMixin, View):
-    pass
+class CancelReservationView(CustomLoginRequiredMixin, View):
+    def get(self, request, reservation_id):
+        reservation = ReservationModel.objects.filter(id=reservation_id, reserved_by=request.user)
+        if reservation:
+            reservation.update(
+                is_cancelled=True,
+            )
+            messages.success(
+                self.request,
+                "You have successfully cancelled your reservation.",
+                extra_tags="success",
+            )
+        else:
+            messages.error(
+                self.request,
+                "You cannot cancel this reservation as it does not belong to you.",
+                extra_tags="danger",
+            )
+        return HttpResponseRedirect(reverse("regular_page"))

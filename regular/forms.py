@@ -22,4 +22,4 @@ class MyReservationForm(forms.ModelForm):
         widget = {
             'location': forms.TextInput(attrs={'readonly':'readonly'})
         }
-        exclude = ["reserved_by","reservation_status","is_delivered","truck"]
+        exclude = ["reserved_by","reservation_status","is_delivered","truck","is_cancelled"]

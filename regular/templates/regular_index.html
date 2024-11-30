@@ -46,6 +46,9 @@
                             <b>{{ item.truck.driver.get_full_name }}</b> - {{ item.truck.plate_number }}</td>
                             {% endif %}
                         <th>
+                            <a onclick="confirmationAlert()" href="{% url 'regular_page_reservation_cancel' reservation_id=item.id %}">
+                                <i class="typcn typcn-delete-outline action-icon" style="font-size: 20px;"></i>
+                            </a>
                             <a href="{% url 'regular_page_reservation_update' reservation_id=item.id %}">
                                 <i class="typcn typcn-edit action-icon" style="font-size: 20px;"></i>
                             </a>
@@ -61,4 +64,11 @@
     </div>
 </div>
 </div>
+<script>
+    function confirmationAlert() {
+        if(!confirm('Are you sure you want to cancel this reservation?')) {
+            event.preventDefault();
+        }
+    }
+</script>
 {% endblock %}
