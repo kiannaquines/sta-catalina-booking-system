@@ -39,8 +39,8 @@
                             </span>
                         </td>
                         <td>
-                            <span class="badge bg-{% if item.is_reserved %}primary{% else %}warning{% endif %} text-white">
-                                {% if item.is_reserved %}Reserved{% else %}Unavailable{% endif %}
+                            <span class="badge bg-{% if item.is_reserved %}warning{% else %}primary{% endif %} text-white">
+                                {% if item.is_reserved %}Unavailable{% else %}Available{% endif %}
                             </span>
                         </td>
                         <td>

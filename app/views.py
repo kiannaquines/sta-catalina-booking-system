@@ -167,7 +167,12 @@ class ConfirmReservationView(CustomLoginRequiredMixin, UpdateView):
     success_url = reverse_lazy("reservation")
 
     def form_valid(self, form: ConfirmReservationForm) -> HttpResponse:
-        print(form.cleaned_data)
+        truck_info = form.cleaned_data['truck']
+        TruckModel.objects.filter(
+            id=truck_info.id
+        ).update(
+            is_reserved=True,
+        )
         if form.cleaned_data['is_send_sms_notification'] == False:
             messages.warning(
                 self.request,
