@@ -4,7 +4,7 @@ from django import forms
 class MyReservationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(MyReservationForm, self).__init__(*args, **kwargs)
-
+        self.fields['date_reserved'].label = 'Date'
         if 'location' in self.fields:
             self.fields['location'].widget.attrs['readonly'] = True
         

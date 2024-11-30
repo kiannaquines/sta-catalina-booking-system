@@ -4,7 +4,14 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import View, ListView, UpdateView, CreateView, DeleteView
-from app.forms import ProfileForm, ReservationForm, SignupForm, TruckForm, UpdateUserForm, UserForm
+from app.forms import (
+    ProfileForm,
+    ReservationForm,
+    SignupForm,
+    TruckForm,
+    UpdateUserForm,
+    UserForm,
+)
 from app.mixins import CustomLoginRequiredMixin
 from app.models import *
 from reportlab.lib import colors
@@ -20,10 +27,12 @@ from collections import defaultdict
 from django.contrib.auth import logout, authenticate, login
 from app.forms import LoginForm
 
+
 def logout_me(request):
     logout(request)
-    messages.success(request,'You have been logged out', extra_tags='success')
-    return HttpResponseRedirect(reverse_lazy('login'))
+    messages.success(request, "You have been logged out", extra_tags="success")
+    return HttpResponseRedirect(reverse_lazy("login"))
+
 
 class ProfileFormView(CustomLoginRequiredMixin, View):
     template_name = "profile.html"
@@ -31,14 +40,18 @@ class ProfileFormView(CustomLoginRequiredMixin, View):
     def get(self, request):
         context = {}
         form = ProfileForm()
-        context['form'] = form
+        context["form"] = form
         return render(request, self.template_name, context)
 
     def post(self, request):
         form = ProfileForm(request.POST, instance=request.user)
         if form.is_valid():
             form.save()
-            messages.success(request, "Your profile has been updated successfully.", extra_tags="success")
+            messages.success(
+                request,
+                "Your profile has been updated successfully.",
+                extra_tags="success",
+            )
 
             if form.cleaned_data["user_type"] == "Regular User":
                 return redirect("regular_page")
@@ -46,10 +59,11 @@ class ProfileFormView(CustomLoginRequiredMixin, View):
                 return redirect("manager_page")
             else:
                 return redirect("driver_page")
-            
+
         else:
             messages.error(request, "Please correct the errors below.")
             return render(request, self.template_name, {"form": form})
+
 
 class LoginView(View):
     template_name = "login.html"
@@ -57,14 +71,14 @@ class LoginView(View):
     def get(self, request):
         context = {}
         login_form = LoginForm()
-        context['form'] = login_form
+        context["form"] = login_form
         return render(request, self.template_name, context)
 
     def post(self, request):
         login_form = LoginForm(request.POST)
         if login_form.is_valid():
-            username = login_form.cleaned_data['username']
-            password = login_form.cleaned_data['password']
+            username = login_form.cleaned_data["username"]
+            password = login_form.cleaned_data["password"]
             user = authenticate(username=username, password=password)
 
             if user is not None:
@@ -78,54 +92,67 @@ class LoginView(View):
                     elif user.user_type == "Driver":
                         return redirect("driver_page")
                     else:
-                        return redirect(reverse('reservation'))
-            
-            messages.error(request, 'Invalid credentials or account still inactive.', extra_tags="danger")
+                        return redirect(reverse("reservation"))
+
+            messages.error(
+                request,
+                "Invalid credentials or account still inactive.",
+                extra_tags="danger",
+            )
 
         else:
             for field, errors in login_form.errors.items():
                 for error in errors:
                     messages.error(request, error, extra_tags="danger")
 
-        return render(request, self.template_name, {'form': login_form})
-                    
+        return render(request, self.template_name, {"form": login_form})
+
+
 class RegisterView(View):
     template_name = "register.html"
 
     def get(self, request):
         context = {}
         signup_form = SignupForm()
-        context['form'] = signup_form
+        context["form"] = signup_form
         return render(request, self.template_name, context)
 
     def post(self, request):
-        if request.method == 'POST':
+        if request.method == "POST":
             context = {}
             signup_form = SignupForm(request.POST)
             if signup_form.is_valid():
                 user = signup_form.save()
-                user.set_password(signup_form.cleaned_data['password2'])
+                user.set_password(signup_form.cleaned_data["password2"])
                 user.is_active = True
                 user.save()
 
                 authenticated_user = authenticate(
-                    username=signup_form.cleaned_data['username'], 
-                    password=signup_form.cleaned_data['password2']
+                    username=signup_form.cleaned_data["username"],
+                    password=signup_form.cleaned_data["password2"],
                 )
 
                 if authenticated_user is not None:
                     login(request, authenticated_user)
-                    messages.success(request, "Registration successful, thank you!", extra_tags="success")
+                    messages.success(
+                        request,
+                        "Registration successful, thank you!",
+                        extra_tags="success",
+                    )
                     return redirect("profile_registration")
                 else:
-                    messages.error(request, "Authentication failed after registration. Please try logging in.", extra_tags="danger")
+                    messages.error(
+                        request,
+                        "Authentication failed after registration. Please try logging in.",
+                        extra_tags="danger",
+                    )
                     return redirect("login")
             else:
                 for field, errors in signup_form.errors.items():
                     for error in errors:
                         messages.error(request, error, extra_tags="danger")
 
-                context['form'] = signup_form
+                context["form"] = signup_form
                 return render(request, self.template_name, context)
 
 
