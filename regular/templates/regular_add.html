@@ -1,0 +1,163 @@
+{% extends './includes/regular_base.html' %}
+{% load static %}
+
+{% block specific_css %}
+<link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
+<link href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.css" rel="stylesheet" />
+
+{% endblock %}
+
+{% block content %}
+<div class="az-content-breadcrumb">
+    <span>Dashboard</span>
+    <span>Tables</span>
+    <span>Create Reservation</span>
+</div>
+<h2 class="az-content-title">Create Reservations</h2>
+<div class="az-content-label mg-b-5">Create Reservation Table</div>
+<p class="mg-b-20">Create reservation information.</p>
+{% include './includes/regular_message.html' %}
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-3">
+                <form method="post">
+                    {% csrf_token %}
+                {% for input in form %}
+                    {% if input.id_for_label == 'id_is_delivered' %}
+                    <label class="ckbox form-label mt-2 mb-3">
+                        {{ input }}
+                        <span>{{ input.label }}</span>
+                    </label>
+                    {% elif input.id_for_label == 'id_date_reserved' %}
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">
+                                {{ input.label }}
+                            </div>
+                        </div>
+                        {{ input }}
+                    </div>
+                    {% else %}
+                    <div class="form-group">
+                        <label for="{{ input.id_for_label }}" class="form-label">{{ input.label }}</label>
+                        {{ input }}
+                        <small class="text-muted">{{ input.help_text }}</small>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+                    <div class="d-flex gap-3 align-items-center">
+                        <button class="btn btn-az-primary mr-3">Create Reservation</button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-9">
+                <div id="map" style="width: 100%; height: 100%"></div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}
+
+{% block specific_js %}
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+<script src="{% static 'lib/jquery.maskedinput/jquery.maskedinput.js' %}"></script>
+<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+      $('#id_date_reserved').mask('99/99/9999');
+    });
+
+    let map;
+    let mapInitialized = false;
+    let latitude, longitude;
+    let marker;
+
+    function enableLocation() {
+        return new Promise((resolve, reject) => {
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const latitude = position.coords.latitude;
+                        const longitude = position.coords.longitude;
+                        resolve({ latitude, longitude });
+                    },
+                    (error) => {
+                        switch (error.code) {
+                            case error.PERMISSION_DENIED:
+                                reject("Permission denied. Please enable location access.");
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                reject("Location unavailable.");
+                                break;
+                            case error.TIMEOUT:
+                                reject("Request timed out. Try again.");
+                                break;
+                            default:
+                                reject("An unknown error occurred.");
+                        }
+                    }
+                );
+            } else {
+                reject("Geolocation is not supported by your browser.");
+            }
+        });
+    }
+
+
+    function findMyLocation(latitude, longitude) {
+        const ACCESS_TOKEN = 'pk.eyJ1IjoibmlraWUwMiIsImEiOiJjbTA5cTg4dHgxemwxMmpzaGpobno2bWczIn0.pA7T9PP1LMbliVaOCwhJRA';
+        mapboxgl.accessToken = ACCESS_TOKEN;
+        
+        map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/satellite-streets-v12',
+            center: [longitude, latitude],
+            country: 'PH',
+            zoom: 16,
+            collectResourceTiming: false,
+            attributionControl: false,
+        });
+
+        map.on('load', () => {
+            const geocoder = new MapboxGeocoder({
+                accessToken: ACCESS_TOKEN,
+                mapboxgl: mapboxgl,
+                proximity: { longitude, latitude },
+                marker: true,
+                placeholder: 'Search for a location...',
+            });
+
+            map.addControl(geocoder);
+
+            geocoder.on('result', (event) => {
+                const coordinates = event.result.geometry.coordinates;
+                const formattedLocation = `${coordinates}`
+
+                document.querySelector("#id_location").value = formattedLocation
+                map.flyTo({
+                    center: coordinates,
+                    zoom: 16,
+                });
+            });
+        });
+    }
+
+    function initializeMap() {
+        enableLocation()
+            .then(location => {
+                findMyLocation(
+                    location.latitude, 
+                    location.longitude
+                );
+            })
+            .catch(error => {
+                alert(error);
+            });
+    }
+
+    initializeMap();
+</script>
+{% endblock %}

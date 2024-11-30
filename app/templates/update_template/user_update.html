@@ -1,0 +1,47 @@
+{% extends './../includes/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="az-content-breadcrumb">
+    <span>Dashboard</span>
+    <span>Tables</span>
+    <span>Update User Information</span>
+</div>
+<h2 class="az-content-title">Update User Information</h2>
+<div class="az-content-label mg-b-5">Update User Information Table</div>
+<p class="mg-b-20">Update User Information information.</p>
+{% include './../includes/message.html' %}
+<div class="card">
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            {% for input in form %}
+                {% if input.id_for_label == 'id_is_staff' or input.id_for_label == 'id_is_superuser' or input.id_for_label == 'id_is_active' or input.id_for_label == 'id_is_member' %}
+                    <label class="ckbox form-label mt-2 mb-3">
+                    {{ input }}<span>{{ input.label }}</span>                    
+                </label>
+                <small class="text-muted">{{ input.help_text }}</small>
+                {% else %}
+               <div class="form-group">
+                    <label for="{{ input.id_for_label }}" class="form-label">{{ input.label }}</label>
+                    {{ input }}
+                    <small class="text-muted">{{ input.help_text }}</small>
+               </div>
+               {% endif %}
+            {% endfor %}
+            <button class="btn btn-az-primary w-50">Update User Information</button>
+        </form>
+    </div>
+</div>
+</div>
+{% endblock %}
+
+{% block specific_js %}
+<script src="{% static 'lib/jquery.maskedinput/jquery.maskedinput.js' %}"></script>
+
+<script>
+    $(document).ready(function() {
+      $('#id_date_reserved').mask('99/99/9999');
+    });
+  </script>  
+{% endblock %}

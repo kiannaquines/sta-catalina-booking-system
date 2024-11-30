@@ -1,0 +1,51 @@
+{% extends './../includes/base.html' %}
+
+
+{% block content %}
+<div class="az-content-breadcrumb">
+    <span>Dashboard</span>
+    <span>Tables</span>
+    <span>Truck Driver</span>
+</div>
+<h2 class="az-content-title">Truck Driver</h2>
+<div class="az-content-label mg-b-5">Truck Driver Table</div>
+<p class="mg-b-20">Truck Driver information.</p>
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table" id="dataTable">
+                <thead>
+                    <tr>
+                        <th>Driver</th>
+                        <th>Email</th>
+                        <th>Contact</th>
+                        <th>Type</th>
+                        <th>Date Joined</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in drivers %}
+                    <tr>
+                        <th>{{ item.get_full_name }}</th>
+                        <th>{{ item.email }}</th>
+                        <th>{{ item.phone_number }}</th>
+                        <th>{{ item.user_type }}</th>
+                        <th>{{ item.date_joined }}</th>
+                        <td>
+                            <a href="">
+                                <i class="typcn typcn-edit action-icon" style="font-size: 20px;"></i>
+                            </a>
+                            <a href="">
+                                <i class="typcn typcn-trash action-icon"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}

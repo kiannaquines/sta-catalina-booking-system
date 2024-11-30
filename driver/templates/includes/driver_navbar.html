@@ -1,0 +1,41 @@
+{% load static %}
+<div class="az-header">
+    <div class="container">
+      <div class="az-header-left">
+        <a href="{% url 'driver_page' %}" class="az-logo"><span></span> Sta. Catalina</a>
+        <a href="" id="azMenuShow" class="az-header-menu-icon d-lg-none"><span></span></a>
+      </div>
+      <div class="az-header-menu">
+        <div class="az-header-menu-header">
+          <a href="{% url 'driver_page' %}" class="az-logo"><span></span> azia</a>
+          <a href="" class="close">&times;</a>
+        </div>
+        <ul class="nav">
+          <li class="nav-item active show">
+            <a href="{% url 'driver_page' %}" class="nav-link"><i class="typcn typcn-chart-area-outline"></i> Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'driver_page' %}" class="nav-link"><i class="typcn typcn-book"></i> Reservation</a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'driver_page' %}" class="nav-link"><i class="typcn typcn-book"></i> Delivered </a>
+          </li>
+        </ul>
+      </div>
+      <div class="az-header-right">
+        <div class="dropdown az-profile-menu">
+          <a href="" class="az-img-user"><img src="{% static 'img/logo.jpg' %}" alt=""></a>
+          <div class="dropdown-menu">
+            <div class="az-dropdown-header d-sm-none">
+              <a href="" class="az-header-arrow"><i class="icon ion-md-arrow-back"></i></a>
+            </div>
+            <div class="az-dropdown-header d-sm-none">
+              <a href="" class="az-header-arrow"><i class="icon ion-md-arrow-back"></i></a>
+            </div>
+            <a href="{% url 'logout_me' %}" class="dropdown-item"> Sign Out</a>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </div>

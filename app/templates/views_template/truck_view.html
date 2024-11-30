@@ -1,0 +1,62 @@
+{% extends './../includes/base.html' %}
+
+
+{% block content %}
+<div class="az-content-breadcrumb">
+    <span>Dashboard</span>
+    <span>Tables</span>
+    <span>Truck</span>
+</div>
+<h2 class="az-content-title">Truck</h2>
+<div class="az-content-label mg-b-5">Truck Table</div>
+<p class="mg-b-20">Truck information.</p>
+{% include './../includes/message.html' %}
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table" id="dataTable">
+                <thead>
+                    <tr>
+                        <th>Driver</th>
+                        <th>Contact</th>
+                        <th>Plate Number</th>
+                        <th>Capacity</th>
+                        <th>Availability</th>
+                        <th>Reserved</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in trucks %}
+                    <tr>
+                        <th>{{ item.driver.get_full_name }}</th>
+                        <th>{{ item.driver.phone_number }}</th>
+                        <td>{{ item.plate_number }}</td>
+                        <td>{{ item.capacity }}</td>
+                        <td>
+                            <span class="badge bg-{% if item.is_available %}primary{% else %}warning{% endif %} text-white">
+                                {% if item.is_available %}Available{% else %}Unavailable{% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge bg-{% if item.is_reserved %}primary{% else %}warning{% endif %} text-white">
+                                {% if item.is_reserved %}Reserved{% else %}Unavailable{% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{% url 'truck_update' truck_id=item.id %}">
+                                <i class="typcn typcn-edit action-icon" style="font-size: 20px;"></i>
+                            </a>
+                            <a href="{% url 'delete_update' truck_id=item.id %}">
+                                <i class="typcn typcn-trash action-icon"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}

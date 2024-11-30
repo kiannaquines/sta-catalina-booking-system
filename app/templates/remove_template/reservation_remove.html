@@ -1,0 +1,35 @@
+{% extends './../includes/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="az-content-breadcrumb">
+    <span>Dashboard</span>
+    <span>Tables</span>
+    <span>Remove Reservation</span>
+</div>
+<h2 class="az-content-title">Remove Reservations</h2>
+<div class="az-content-label mg-b-5">Remove Reservation</div>
+<p class="mg-b-20">Remove reservation information.</p>
+{% include './../includes/message.html' %}
+<div class="card">
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            <p>Are you sure you want to remove the <b>{{ object }}</b> information, this action cannot be undone after submitting the form.</p>
+            <button type="submit" class="btn btn-danger" style="width: 30% !important;">Confirm</button>
+            <button type="button" class="btn btn-az-secondary" style="width: 30% !important;" onclick="backToLastPage()">No, Cancel</button>
+        </form>
+    </div>
+</div>
+</div>
+{% endblock %}
+
+{% block specific_js %}
+<script src="{% static 'lib/jquery.maskedinput/jquery.maskedinput.js' %}"></script>
+
+<script>
+    $(document).ready(function() {
+      $('#id_date_reserved').mask('9999-99-99');
+    });
+  </script>  
+{% endblock %}

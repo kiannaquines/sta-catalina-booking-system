@@ -1,0 +1,46 @@
+{% extends './../includes/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="az-content-breadcrumb">
+    <span>Dashboard</span>
+    <span>Tables</span>
+    <span>Update Information</span>
+</div>
+<h2 class="az-content-title">Update Information</h2>
+<div class="az-content-label mg-b-5">Update Information Table</div>
+<p class="mg-b-20">Update Information information.</p>
+{% include './../includes/message.html' %}
+<div class="card">
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            {% for input in form %}
+                {% if input.id_for_label == 'id_is_reserved' or input.id_for_label == 'id_is_available' %}
+                <label class="ckbox form-label mt-2 mb-3">
+                    {{ input }}<span>{{ input.label }}</span>
+                  </label>
+                {% else %}
+               <div class="form-group">
+                    <label for="{{ input.id_for_label }}" class="form-label">{{ input.label }}</label>
+                    {{ input }}
+                    <small class="text-muted">{{ input.help_text }}</small>
+               </div>
+               {% endif %}
+            {% endfor %}
+            <button class="btn btn-az-primary w-50">Update Truck Information</button>
+        </form>
+    </div>
+</div>
+</div>
+{% endblock %}
+
+{% block specific_js %}
+<script src="{% static 'lib/jquery.maskedinput/jquery.maskedinput.js' %}"></script>
+
+<script>
+    $(document).ready(function() {
+      $('#id_date_reserved').mask('99/99/9999');
+    });
+  </script>  
+{% endblock %}

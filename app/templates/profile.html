@@ -1,0 +1,56 @@
+{% extends './includes/auth_base.html' %}
+
+{% block auth_content %}
+<div class="az-signin-wrapper">
+    <div class="az-card-signin" style="height: 720px !important; width: 550px;">
+        {% for message in messages %}
+        <script>
+          alert('{{ message }}')
+        </script>
+        {% endfor %}
+        <div class="az-signin-header">
+          <h5>Profile Information</h5>
+          <form method="POST">
+            {% csrf_token %}
+            {% for input in form %}
+            
+            {% if input.id_for_label == 'id_is_member' %}
+            <label class="ckbox form-label mt-1 mb-2">
+                {{ input }}<span>{{ input.label }}</span>                    
+            </label>
+            {% else %}
+
+                {% if input.id_for_label == 'id_first_name' and input.id_for_label == 'id_last_name' %}
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>{{ input.label }}</label>
+                            {{ input }}
+                            <small class="text-muted">{{ input.help_text }}</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>{{ input.label }}</label>
+                            {{ input }}
+                            <small class="text-muted">{{ input.help_text }}</small>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="form-group">
+                    <label>{{ input.label }}</label>
+                    {{ input }}
+                    <small class="text-muted">{{ input.help_text }}</small>
+                </div>
+                {% endif %}
+
+            {% endif %}
+
+            {% endfor %}
+            <button class="btn btn-az-primary btn-block">Continue</button>
+          </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

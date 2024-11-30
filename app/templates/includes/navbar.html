@@ -1,0 +1,91 @@
+{% load static %}
+<div class="az-header">
+    <div class="container">
+      <div class="az-header-left">
+        <a href="{% url 'dashboard' %}" class="az-logo"><span></span> Sta. Catalina</a>
+        <a href="" id="azMenuShow" class="az-header-menu-icon d-lg-none"><span></span></a>
+      </div>
+      <div class="az-header-menu">
+        <div class="az-header-menu-header">
+          <a href="{% url 'dashboard' %}" class="az-logo"><span></span> azia</a>
+          <a href="" class="close">&times;</a>
+        </div>
+        <ul class="nav">
+          <li class="nav-item active show">
+            <a href="{% url 'dashboard' %}" class="nav-link"><i class="typcn typcn-chart-area-outline"></i> Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'reservation' %}" class="nav-link with-sub"><i class="typcn typcn-book"></i> Reservation</a>
+            <div class="az-menu-sub">
+              <div class="container">
+                <div>
+                  <nav class="nav">
+                    <a href="{% url 'reservation' %}" class="nav-link">Manage Reservation</a>
+                    <a href="{% url 'create_reservation' %}" class="nav-link">Create Reservation</a>
+                    <a href="{% url 'reservation_confirmed' %}" class="nav-link">Confirmed Reservation</a>
+                    <a href="{% url 'cancelled_reservation' %}" class="nav-link">Cancelled Reservation</a>
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'truck' %}" class="nav-link with-sub"><i class="typcn typcn-book"></i> Manage Truck</a>
+            <div class="az-menu-sub">
+              <div class="container">
+                <div>
+                  <nav class="nav">
+                    <a href="{% url 'truck' %}" class="nav-link">Manage Truck</a>
+                    <a href="{% url 'truck_create' %}" class="nav-link">Create Truck</a>
+                    <a href="{% url 'truck_driver' %}" class="nav-link">Driver</a>
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'users' %}" class="nav-link with-sub"><i class="typcn typcn-book"></i> Manage Users</a>
+            <div class="az-menu-sub">
+              <div class="container">
+                <div>
+                  <nav class="nav">
+                    <a href="{% url 'users' %}" class="nav-link">Manage Users</a>
+                    <a href="{% url 'user_create' %}" class="nav-link">Create User</a>
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </li>
+
+          <li class="nav-item">
+            <a href="{% url 'reservation_report' %}" class="nav-link with-sub"><i class="typcn typcn-book"></i> Report</a>
+            <div class="az-menu-sub">
+              <div class="container">
+                <div>
+                  <nav class="nav">
+                    <a href="{% url 'reservation_report' %}" class="nav-link">Reservation Report</a>
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="az-header-right">
+        <div class="dropdown az-profile-menu">
+          <a href="" class="az-img-user"><img src="{% static 'img/logo.jpg' %}" alt=""></a>
+          <div class="dropdown-menu">
+            <div class="az-dropdown-header d-sm-none">
+              <a href="" class="az-header-arrow"><i class="icon ion-md-arrow-back"></i></a>
+            </div>
+            <a href="/admin" class="dropdown-item"> Super Admin</a>
+            <div class="az-dropdown-header d-sm-none">
+              <a href="" class="az-header-arrow"><i class="icon ion-md-arrow-back"></i></a>
+            </div>
+            <a href="{% url 'logout_me' %}" class="dropdown-item"> Sign Out</a>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </div>

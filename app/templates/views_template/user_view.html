@@ -1,0 +1,52 @@
+{% extends './../includes/base.html' %}
+
+
+{% block content %}
+<div class="az-content-breadcrumb">
+    <span>Dashboard</span>
+    <span>Tables</span>
+    <span>Users</span>
+</div>
+<h2 class="az-content-title">Users</h2>
+<div class="az-content-label mg-b-5">User Table</div>
+<p class="mg-b-20">Manage user information.</p>
+{% include './../includes/message.html' %}
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table" id="dataTable">
+                <thead>
+                    <tr>
+                        <th>Fullname</th>
+                        <th>Contact</th>
+                        <th>User Type</th>
+                        <th>Date Reserved</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in users %}
+                    <tr>
+                        <th>{{ item.get_full_name }}</th>
+                        <th>{{ item.phone_number }}</th>
+                        <td>
+                            <span class="badge bg-primary text-white">{{ item.user_type }}</span>
+                        </td>
+                        <th>{{ item.date_joined }}</th>
+                        <th>
+                            <a href="{% url 'user_update' user_id=item.id %}">
+                                <i class="typcn typcn-edit action-icon" style="font-size: 20px;"></i>
+                            </a>
+                            <a href="{% url 'user_delete' user_id=item.id %}">
+                                <i class="typcn typcn-trash action-icon"></i>
+                            </a>
+                        </th>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}

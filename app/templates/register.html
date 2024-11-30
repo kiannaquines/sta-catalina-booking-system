@@ -1,0 +1,32 @@
+{% extends './includes/auth_base.html' %}
+
+{% block auth_content %}
+<div class="az-signin-wrapper">
+    <div class="az-card-signin" style="height: 660px !important;">
+        <div class="az-signin-header">
+          <h2>Create Account</h2>
+          <form method="POST">
+            {% csrf_token %}
+            {% for input in form %}
+            <div class="form-group">
+              <label>{{ input.label }}</label>
+              {{ input }}
+            </div>
+            {% endfor %}
+            <button class="btn btn-az-primary btn-block">Sign Up</button>
+          </form>
+        </div>
+        {% for message in messages %}
+        <script>
+          alert('{{ message }}')
+        </script>
+        {% endfor %}
+        <div class="az-signin-footer">
+            <p>
+                Don't have an account?
+                <a href="{% url 'login' %}">Have an account?</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
