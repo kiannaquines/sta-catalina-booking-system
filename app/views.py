@@ -28,7 +28,8 @@ from io import BytesIO
 from collections import defaultdict
 from django.contrib.auth import logout, authenticate, login
 from app.forms import LoginForm
-
+from core.settings import SERVER_SMS_MESSAGE_TEMPLATE
+from app.service import send_sms_api_interface
 
 def logout_me(request):
     logout(request)
@@ -165,11 +166,38 @@ class ConfirmReservationView(CustomLoginRequiredMixin, UpdateView):
     form_class = ConfirmReservationForm
     success_url = reverse_lazy("reservation")
 
-    def form_valid(self, form: BaseModelForm) -> HttpResponse:
+    def form_valid(self, form: ConfirmReservationForm) -> HttpResponse:
+        print(form.cleaned_data)
+        if form.cleaned_data['is_send_sms_notification'] == False:
+            messages.warning(
+                self.request,
+                "Confirm reservation, but SMS notification not sent as it is not enabled for this reservation.",
+                extra_tags="warning",
+            )
+        else:
+            mobile = form.instance.reserved_by.phone_number
+            message = SERVER_SMS_MESSAGE_TEMPLATE.format(
+                client_fullname=form.instance.reserved_by.get_full_name(),
+                service_type=form.instance.reservation_type,
+                quantity=form.instance.quantity,
+                schedule_departure=form.instance.date_reserved,
+                driver=form.instance.truck.driver.get_full_name(),
+                product=form.instance.product_name,
+                pickup_location=form.instance.reserved_by.address,
+                assigned_truck=form.instance.truck.plate_number,
+            )
+
+            result = send_sms_api_interface(message, mobile)
+            
+            messages.success(
+                self.request,
+                result["message"],
+                extra_tags=result["status"],
+            )
+        
         return super().form_valid(form)
     
-
-    def form_invalid(self, form: BaseModelForm) -> HttpResponse:
+    def form_invalid(self, form: ConfirmReservationForm) -> HttpResponse:
         return super().form_invalid(form)
 
 

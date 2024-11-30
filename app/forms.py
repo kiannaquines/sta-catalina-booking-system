@@ -132,9 +132,13 @@ class UpdateUserForm(forms.ModelForm):
 
 
 class ConfirmReservationForm(forms.ModelForm):
+
+    is_send_sms_notification = forms.BooleanField(label="Sent SMS Notification", required=False, widget=forms.CheckboxInput(attrs={'checked':True}))
+    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['date_reserved'].label = 'Date'
+        self.fields['truck'].label = 'Truck Driver'
         
         for field in self.fields.values():
             if isinstance(field.widget, forms.CheckboxInput):
@@ -146,6 +150,7 @@ class ConfirmReservationForm(forms.ModelForm):
         model = ReservationModel
         fields = [
             "reservation_status",
+            "truck",
             "date_reserved",
         ]
         widgets = {

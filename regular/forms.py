@@ -8,6 +8,9 @@ class MyReservationForm(forms.ModelForm):
         if 'location' in self.fields:
             self.fields['location'].widget.attrs['readonly'] = True
         
+        if 'date_reserved' in self.fields:
+            self.fields['date_reserved'].widget.attrs['placeholder'] = 'MM/DD/YYYY'
+
         for field in self.fields.values():
             if isinstance(field.widget, forms.CheckboxInput):
                 field.widget.attrs.update({"class": ""})

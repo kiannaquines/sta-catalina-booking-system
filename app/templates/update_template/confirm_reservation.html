@@ -16,8 +16,8 @@
         <form method="post">
             {% csrf_token %}
             {% for input in form %}
-                {% if input.id_for_label == 'id_is_delivered' %}
-                <label class="ckbox form-label mt-2 mb-3">
+                {% if input.id_for_label == 'id_is_send_sms_notification' %}
+                <label class="ckbox form-label mt-3 mb-3">
                     {{ input }}<span>{{ input.label }}</span>
                   </label>
                 {% elif input.id_for_label == 'id_date_reserved' %}
