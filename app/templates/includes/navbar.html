@@ -18,7 +18,6 @@
                 <div>
                   <nav class="nav">
                     <a href="{% url 'reservation' %}" class="nav-link">Manage Reservation</a>
-                    <a href="{% url 'create_reservation' %}" class="nav-link">Create Reservation</a>
                     <a href="{% url 'reservation_confirmed' %}" class="nav-link">Confirmed Reservation</a>
                     <a href="{% url 'cancelled_reservation' %}" class="nav-link">Cancelled Reservation</a>
                   </nav>
@@ -53,24 +52,11 @@
               </div>
             </div>
           </li>
-
-          <li class="nav-item">
-            <a href="{% url 'reservation_report' %}" class="nav-link with-sub"><i class="typcn typcn-book"></i> Report</a>
-            <div class="az-menu-sub">
-              <div class="container">
-                <div>
-                  <nav class="nav">
-                    <a href="{% url 'reservation_report' %}" class="nav-link">Reservation Report</a>
-                  </nav>
-                </div>
-              </div>
-            </div>
-          </li>
         </ul>
       </div>
       <div class="az-header-right">
         <div class="dropdown az-profile-menu">
-          <a href="" class="az-img-user"><img src="{% static 'img/logo.jpg' %}" alt=""></a>
+          <a href="" class="az-img-user"><img src="{% static 'img/logo.jpeg' %}" alt=""></a>
           <div class="dropdown-menu">
             <div class="az-dropdown-header d-sm-none">
               <a href="" class="az-header-arrow"><i class="icon ion-md-arrow-back"></i></a>

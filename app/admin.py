@@ -31,10 +31,12 @@ class TruckAdmin(admin.ModelAdmin):
     list_filter = ('plate_number', 'driver', 'capacity')
 
 class ReservationAdmin(admin.ModelAdmin):
-    list_display = ('reserved_by','product_name','quantity','is_delivered','truck','reservation_type','date_reserved', 'date_added')
+    list_display = ('reserved_by','is_delivered','truck','reservation_type','date_reserved', 'date_added')
     list_filter = ('is_delivered', 'truck','reservation_type')
 
 
 admin.site.register(TruckModel, TruckAdmin)
 admin.site.register(ReservationModel, ReservationAdmin)
 admin.site.register(CustomUserModel, CustomUserAdmin)
+
+admin.site.register(ReservationProduct)

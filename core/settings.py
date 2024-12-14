@@ -91,10 +91,10 @@ STATICFILES_DIRS = [
 ]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-SERVER_SMS_IP = '10.0.0.141'
+SERVER_SMS_IP = '192.168.137.181'
 SERVER_SMS_PORT = 8080
 SERVER_SMS_USERNAME = 'sms'
-SERVER_SMS_PASSWORD = 'R19v7OSB'
+SERVER_SMS_PASSWORD = 'cSi0FJ53'
 SERVER_SMS_MESSAGE_TEMPLATE = """Dear {client_fullname},
 
 We are pleased to inform you that your trucking service reservation has been successfully confirmed. Below are the details of the booking:

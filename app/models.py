@@ -6,7 +6,7 @@ class CustomUserModel(AbstractUser):
     USER_TYPE = (
         ("Staff", "Staff"),
         ("Manager", "Manager"),
-        ("Regular User", "Regular User"),
+        ("Client", "Client"),
         ("Driver", "Driver"),
     )
 
@@ -21,7 +21,7 @@ class CustomUserModel(AbstractUser):
         return super().get_full_name()
 
     def __str__(self) -> str:
-        return self.get_full_name()
+        return self.get_username()
 
 
 class TruckModel(models.Model):
@@ -44,6 +44,20 @@ class TruckModel(models.Model):
         return f"{self.driver.get_full_name()} {self.plate_number}"
 
 
+class ReservationProduct(models.Model):
+
+    TYPE = (
+        ("Sack","Sack"),
+        ("Kilo","Kilo"),
+    )
+    tied_with_reservation_of = models.ForeignKey('ReservationModel', on_delete=models.CASCADE)
+    product_name = models.CharField(max_length=255, help_text="Product Name")
+    quantity = models.IntegerField(help_text="Quantity of products")
+    delivery_quantity_type = models.CharField(max_length=50, help_text="(Kilo or No. Sack)", choices=TYPE, default="Sack")
+
+    def __str__(self):
+        return self.product_name
+
 class ReservationModel(models.Model):
     RESERVATION_TYPE = (
         ("Hauling", "Hauling"),
@@ -56,18 +70,20 @@ class ReservationModel(models.Model):
         ("Cancelled", "Cancelled"),
     )
 
+
     reserved_by = models.ForeignKey(
         CustomUserModel,
-        limit_choices_to={"user_type": "Regular User"},
+        limit_choices_to={"user_type": "Client"},
         on_delete=models.CASCADE,
         help_text="Select a user who reserved",
     )
-    product_name = models.CharField(max_length=255, help_text="Product Name")
-    quantity = models.IntegerField(help_text="Product quantity (Kilo or No. Sack)")
+    
     location = models.CharField(help_text="Your location to deliver", max_length=255, )
+    
     is_delivered = models.BooleanField(
         default=False, help_text="Whether the product is delivered",
     )
+    complete_address = models.TextField(max_length=255, help_text="Complete address of the farm", null=True, blank=True)
     truck = models.ForeignKey(
         TruckModel,
         limit_choices_to={"driver__user_type": "Driver"},
@@ -77,6 +93,7 @@ class ReservationModel(models.Model):
         null=True
     )
     date_reserved = models.DateField(auto_now_add=False, help_text="Date reserved")
+    time_reservation = models.TimeField(auto_now_add=False, null=True, blank=True, help_text="Time reservation")
     reservation_type = models.CharField(
         max_length=255, choices=RESERVATION_TYPE, help_text="Reservation type"
     )
@@ -87,4 +104,4 @@ class ReservationModel(models.Model):
     date_added = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
-        return self.product_name
+        return f'{self.location} | {self.reserved_by.get_username()}'

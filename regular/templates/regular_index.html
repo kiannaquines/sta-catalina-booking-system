@@ -21,41 +21,50 @@
                         <th>Reservation</th>
                         <th>Date Reserved</th>
                         <th>Delivery Status</th>
-                        <th>Driver information</th>
+                        <th>Driver Information</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for item in reservations %}
+                    {% for reservation_data in reservations_with_products %}
                     <tr>
-                        <th>{{ item.reserved_by.get_full_name }}</th>
-                        <th>{{ item.product_name }}</th>
+                        <td>{{ reservation_data.reservation.reserved_by.get_full_name }}</td>
+
                         <td>
-                            <span class="badge bg-primary text-white">{{ item.reservation_type }}</span>
+                            {% for product in reservation_data.products %}
+                                <span class="badge bg-primary text-white">{{ product.product_name }} ({{ product.quantity }} - {{ product.delivery_quantity_type }})</span>
+                            {% empty %}
+                                <span class="badge bg-warning text-white">No products associated.</span>
+                            {% endfor %}
                         </td>
-                        <th>{{ item.date_reserved }}</th>
+
                         <td>
-                            <span class="badge bg-{% if item.is_delivered %}primary{% else %}warning{% endif %} text-white">
-                                {% if item.is_delivered %}Delivered{% else %}Pending Delivery{% endif %}
+                            <span class="badge bg-primary text-white">{{ reservation_data.reservation.reservation_type }}</span>
+                        </td>
+                        <td>{{ reservation_data.reservation.date_reserved }}</td>
+                        <td>
+                            <span class="badge bg-{% if reservation_data.reservation.is_delivered %}primary{% else %}warning{% endif %} text-white">
+                                {% if reservation_data.reservation.is_delivered %}Delivered{% else %}Pending Delivery{% endif %}
                             </span>
                         </td>
                         <td>
-                            {% if item.truck.driver.get_full_name == '' %}
+                            {% if reservation_data.reservation.truck.driver.get_full_name == '' %}
                             <span class="badge bg-primary text-white">Waiting for staff to assign driver</span>
                             {% else %}
-                            <b>{{ item.truck.driver.get_full_name }}</b> - {{ item.truck.plate_number }}</td>
+                            <b>{{ reservation_data.reservation.truck.driver.get_full_name }}</b> - {{ reservation_data.reservation.truck.plate_number }}
                             {% endif %}
-                        <th>
-                            <a onclick="confirmationAlert()" href="{% url 'regular_page_reservation_cancel' reservation_id=item.id %}">
+                        </td>
+                        <td>
+                            <a onclick="confirmationAlert()" href="{% url 'regular_page_reservation_cancel' reservation_id=reservation_data.reservation.id %}">
                                 <i class="typcn typcn-delete-outline action-icon" style="font-size: 20px;"></i>
                             </a>
-                            <a href="{% url 'regular_page_reservation_update' reservation_id=item.id %}">
+                            <a href="{% url 'regular_page_reservation_update' reservation_id=reservation_data.reservation.id %}">
                                 <i class="typcn typcn-edit action-icon" style="font-size: 20px;"></i>
                             </a>
-                            <a href="{% url 'regular_page_reservation_remove' reservation_id=item.id %}">
+                            <a href="{% url 'regular_page_reservation_remove' reservation_id=reservation_data.reservation.id %}">
                                 <i class="typcn typcn-trash action-icon"></i>
                             </a>
-                        </th>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -63,10 +72,9 @@
         </div>
     </div>
 </div>
-</div>
 <script>
     function confirmationAlert() {
-        if(!confirm('Are you sure you want to cancel this reservation?')) {
+        if (!confirm('Are you sure you want to cancel this reservation?')) {
             event.preventDefault();
         }
     }

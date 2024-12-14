@@ -31,14 +31,9 @@
                       <small class="d-block text-muted mt-2">{{ input.help_text }}</small>
                   </label>
                   {% elif input.id_for_label == 'id_date_reserved' %}
-                  <div class="input-group mb-2 mt-2">
-                      <div class="input-group-prepend">
-                          <div class="input-group-text">
-                              {{ input.label }}
-                            </div>
-                          </div>
-                          {{ input }}
-                        </div>
+                  <div class="form-group mb-2 mt-2">
+                        <label for="{{ input.id_for_label }}" class="form-label">{{ input.label }}</label>
+                        {{ input }}
                         <small class="d-block text-muted mt-1">{{ input.help_text }}</small>
                   {% else %}
                   <div class="form-group mt-2">
@@ -68,10 +63,6 @@
 <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.min.js"></script>
 
 <script>
-    $(document).ready(function() {
-      $('#id_date_reserved').mask('99/99/9999');
-    });
-
     let map;
     let mapInitialized = false;
     let latitude, longitude;

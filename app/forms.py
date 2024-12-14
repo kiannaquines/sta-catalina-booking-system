@@ -17,14 +17,13 @@ class LoginForm(forms.Form):
         widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Password"}),
     )
 
-
 class ProfileForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.fields['user_type'].choices = [
             choice for choice in self.fields['user_type'].choices
-            if choice[0] in ["Driver", "Regular User", "Manager"]
+            if choice[0] in ["Driver", "Client", "Manager"]
         ]
 
         for field in self.fields.values():
@@ -50,9 +49,6 @@ class ProfileForm(forms.ModelForm):
             "address",
             "is_member",
         ]
-
-
-
 
 class SignupForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
@@ -104,7 +100,6 @@ class UserForm(UserCreationForm):
             "is_member",
         ]
 
-
 class UpdateUserForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -129,8 +124,6 @@ class UpdateUserForm(forms.ModelForm):
             "is_member",
         ]
 
-
-
 class ConfirmReservationForm(forms.ModelForm):
 
     is_send_sms_notification = forms.BooleanField(label="Sent SMS Notification", required=False, widget=forms.CheckboxInput(attrs={'checked':True}))
@@ -152,13 +145,16 @@ class ConfirmReservationForm(forms.ModelForm):
             "reservation_status",
             "truck",
             "date_reserved",
+            "time_reservation",
         ]
         widgets = {
             "date_reserved": forms.DateInput(
-                attrs={"type": "text", "placeholder": "MM/DD/YYYY"}
+                attrs={"type": "date",}
+            ),
+            "time_reservation": forms.TimeInput(
+                attrs={"type": "time",}
             ),
         }
-
 
 class ReservationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -178,8 +174,6 @@ class ReservationForm(forms.ModelForm):
         model = ReservationModel
         fields = [
             "reserved_by",
-            "product_name",
-            "quantity",
             "location",
             "truck",
             "date_reserved",
@@ -188,12 +182,47 @@ class ReservationForm(forms.ModelForm):
         ]
         widgets = {
             "date_reserved": forms.DateInput(
-                attrs={"type": "text", "placeholder": "MM/DD/YYYY"}
+                attrs={"type": "date",}
+            ),
+            "time_reservation": forms.TimeInput(
+                attrs={"type": "time",}
             ),
             'location': forms.TextInput(attrs={'readonly':'readonly'})
         }
         
+class UpdateReservationForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["is_delivered"].label = "Delivery Status"
+        self.fields['date_reserved'].label = 'Date'
+        if 'location' in self.fields:
+            self.fields['location'].widget.attrs['readonly'] = True
 
+        for field in self.fields.values():
+            if isinstance(field.widget, forms.CheckboxInput):
+                field.widget.attrs.update({"class": ""})
+            else:
+                field.widget.attrs.update({"class": "form-control"})
+
+    class Meta:
+        model = ReservationModel
+        fields = [
+            "location",
+            "truck",
+            "date_reserved",
+            "time_reservation",
+            "reservation_type",
+            "is_delivered",
+        ]
+        widgets = {
+            "date_reserved": forms.DateInput(
+                attrs={"type": "date",}
+            ),
+            "time_reservation": forms.TimeInput(
+                attrs={"type": "time",}
+            ),
+            'location': forms.TextInput(attrs={'readonly':'readonly'})
+        }
 
 class TruckForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):

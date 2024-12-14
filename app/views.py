@@ -11,6 +11,7 @@ from app.forms import (
     ReservationForm,
     SignupForm,
     TruckForm,
+    UpdateReservationForm,
     UpdateUserForm,
     UserForm,
 )
@@ -30,6 +31,7 @@ from django.contrib.auth import logout, authenticate, login
 from app.forms import LoginForm
 from core.settings import SERVER_SMS_MESSAGE_TEMPLATE
 from app.service import send_sms_api_interface
+from django.db.models import Q
 
 def logout_me(request):
     logout(request)
@@ -88,7 +90,7 @@ class LoginView(View):
                 if user.is_active:
                     login(request, user)
 
-                    if user.user_type == "Regular User":
+                    if user.user_type == "Client":
                         return redirect("regular_page")
                     elif user.user_type == "Manager":
                         return redirect("manager_page")
@@ -211,6 +213,26 @@ class ReservationView(CustomLoginRequiredMixin, ListView):
     model = ReservationModel
     context_object_name = "reservations"
 
+    def get_queryset(self):
+        return ReservationModel.objects.filter(
+            Q(reservation_status="Pending") | Q(reservation_status="Confirmed")
+        ).order_by("-date_reserved")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        reservations_with_products = []
+        
+        for reservation in context["reservations"]:
+            products = ReservationProduct.objects.filter(tied_with_reservation_of=reservation)
+            reservations_with_products.append({
+                'reservation': reservation,
+                'products': products
+            })
+        
+        context["reservations_with_products"] = reservations_with_products
+        return context
+
 
 class ReservationReportView(CustomLoginRequiredMixin, ListView):
     template_name = "views_template/report_view.html"
@@ -307,7 +329,7 @@ class CreateReservationView(CustomLoginRequiredMixin, CreateView):
 
 class UpdateReservationView(CustomLoginRequiredMixin, UpdateView):
     pk_url_kwarg = "reservation_id"
-    form_class = ReservationForm
+    form_class = UpdateReservationForm
     model = ReservationModel
     success_url = reverse_lazy("reservation")
     template_name = "update_template/reservation_update.html"

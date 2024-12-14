@@ -1,4 +1,4 @@
-{% extends './includes/regular_base.html' %}
+{% extends './includes/modified_base.html' %}
 {% load static %}
 
 {% block specific_css %}
@@ -8,51 +8,52 @@
 {% endblock %}
 
 {% block content %}
-<div class="az-content-breadcrumb">
-    <span>Dashboard</span>
-    <span>Tables</span>
-    <span>Create Reservation</span>
-</div>
-<h2 class="az-content-title">Create Reservations</h2>
-<div class="az-content-label mg-b-5">Create Reservation Table</div>
-<p class="mg-b-20">Create reservation information.</p>
 {% include './includes/regular_message.html' %}
-<div class="card">
+<div class="card w-100">
     <div class="card-body">
         <div class="row">
-            <div class="col-md-3">
+            <div class="col-md-5">
                 <form method="post">
                     {% csrf_token %}
-                {% for input in form %}
-                    {% if input.id_for_label == 'id_is_delivered' %}
-                    <label class="ckbox form-label mt-2 mb-3">
-                        {{ input }}
-                        <span>{{ input.label }}</span>
-                    </label>
-                    {% elif input.id_for_label == 'id_date_reserved' %}
-                    <div class="input-group mb-2">
-                        <div class="input-group-prepend">
-                            <div class="input-group-text">
-                                {{ input.label }}
+                    <div class="row">
+                        {% for input in product_form %}
+                            <div class="col">
+                                <div class="form-group mt-2">
+                                    <label for="{{ input.id_for_label }}" class="form-label">{{ input.label }}</label>
+                                    {{ input }}
+                                    <small class="text-muted">{{ input.help_text }}</small>
+                                </div>
                             </div>
+                        {% endfor %}
+                    </div>
+                    <div id="product-container"></div>
+                    {% for input in reservation_form %}
+                        {% if input.id_for_label == 'id_is_delivered' %}
+                        <label class="ckbox form-label mt-2 mb-3">
+                            {{ input }}
+                            <span>{{ input.label }}</span>
+                        </label>
+                        {% elif input.id_for_label == 'id_date_reserved' %}
+                        <div class="form-group mb-3">
+                            <label for="{{ input.id_for_label }}" class="form-label">{{ input.label }}</label>
+                            {{ input }}
                         </div>
-                        {{ input }}
-                    </div>
-                    {% else %}
-                    <div class="form-group">
-                        <label for="{{ input.id_for_label }}" class="form-label">{{ input.label }}</label>
-                        {{ input }}
-                        <small class="text-muted">{{ input.help_text }}</small>
-                    </div>
-                    {% endif %}
-                {% endfor %}
-                    <div class="d-flex gap-3 align-items-center">
+                        {% else %}
+                        <div class="form-group mt-2">
+                            <label for="{{ input.id_for_label }}" class="form-label">{{ input.label }}</label>
+                            {{ input }}
+                            <small class="text-muted">{{ input.help_text }}</small>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                    <div class="d-flex gap-3 align-items-center mt-3">
                         <button class="btn btn-az-primary mr-3">Create Reservation</button>
+                        <button type="button" class="btn btn-secondary" id="add-product">Add Product</button>
                     </div>
                 </form>
             </div>
-            <div class="col-md-9">
-                <div id="map" style="width: 100%; height: 100%"></div>
+            <div class="col-md-7">
+                <div id="map" style="width: 100%; height: 100vh"></div>
             </div>
         </div>
     </div>
@@ -62,14 +63,61 @@
 
 {% block specific_js %}
 <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
-<script src="{% static 'lib/jquery.maskedinput/jquery.maskedinput.js' %}"></script>
 <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.min.js"></script>
-
 <script>
     $(document).ready(function() {
-      $('#id_date_reserved').mask('99/99/9999');
+    var productIndex = 1;
+
+    $('#add-product').click(function() {
+        var newProductForm = `
+        <div class="row d-flex align-items-center" id="product-form-${productIndex}">
+            <div class="col">
+                <div class="form-group mt-2">
+                    <label for="id_product_name_${productIndex}" class="form-label">Product</label>
+                    <input type="text" name="product_name_${productIndex}" id="id_product_name_${productIndex}" class="form-control" required>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="form-group mt-2">
+                    <label for="id_quantity_${productIndex}" class="form-label">Quantity</label>
+                    <input type="number" name="quantity_${productIndex}" id="id_quantity_${productIndex}" class="form-control" required>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="form-group mt-2">
+                    <label for="id_delivery_quantity_type_${productIndex}" class="form-label">Type</label>
+                    <select name="delivery_quantity_type_${productIndex}" class="form-control" aria-describedby="id_delivery_quantity_type_helptext_${productIndex}" id="id_delivery_quantity_type_${productIndex}">
+                        <option value="Sack" selected="">Sack</option>
+                        <option value="Kilo">Kilo</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-auto">
+                <div class="form-group mt-2">
+                    <label class="form-label text-white">Type</label>
+                    <button type="button" class="btn btn-danger remove-product" data-product-index="${productIndex}">
+                    <i class="fa fa-trash"></i>
+                    </button>    
+                </div>
+            </div>
+        </div>
+        `;
+
+        $('#product-container').append(newProductForm);
+
+        productIndex++;
     });
 
+    $('#product-container').on('click', '.remove-product', function() {
+        var productIndex = $(this).data('product-index');
+        $('#product-form-' + productIndex).remove();
+    });
+});
+</script>
+<script>
     let map;
     let mapInitialized = false;
     let latitude, longitude;
