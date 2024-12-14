@@ -79,7 +79,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Manila'
 
 USE_I18N = True
 
@@ -91,21 +91,20 @@ STATICFILES_DIRS = [
 ]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-SERVER_SMS_IP = '192.168.137.181'
+SERVER_SMS_IP = '10.0.0.108'
 SERVER_SMS_PORT = 8080
 SERVER_SMS_USERNAME = 'sms'
-SERVER_SMS_PASSWORD = 'cSi0FJ53'
+SERVER_SMS_PASSWORD = 'R19v7OSB'
 SERVER_SMS_MESSAGE_TEMPLATE = """Dear {client_fullname},
 
 We are pleased to inform you that your trucking service reservation has been successfully confirmed. Below are the details of the booking:
 
-Service Type: {service_type}
-Quantity: {quantity}
-Schedule Departure: {schedule_departure}
-Driver: {driver}
-Product: {product}
-Pickup Location: {pickup_location}
-Assigned Truck: {assigned_truck}
+Service Type: {service_type}\n
+Product: {product_info}
+Schedule Departure: {schedule_departure}\n
+Farm Address: {farm_address}\n
+Driver: {driver}\n
+Assigned Truck: {assigned_truck}\n
 
 Have a great day ahead,
 Sta. Catalina Cooperative 

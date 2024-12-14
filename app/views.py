@@ -58,7 +58,7 @@ class ProfileFormView(CustomLoginRequiredMixin, View):
                 extra_tags="success",
             )
 
-            if form.cleaned_data["user_type"] == "Regular User":
+            if form.cleaned_data["user_type"] == "Client":
                 return redirect("regular_page")
             elif form.cleaned_data["user_type"] == "Manager":
                 return redirect("manager_page")
@@ -169,6 +169,26 @@ class ConfirmReservationView(CustomLoginRequiredMixin, UpdateView):
     success_url = reverse_lazy("reservation")
 
     def form_valid(self, form: ConfirmReservationForm) -> HttpResponse:
+
+        current_load_of_the_track = form.instance.truck.capacity
+
+        get_all_products_base_on_reservation = ReservationProduct.objects.filter(
+            tied_with_reservation_of=self.kwargs.get('reservation_id')
+        )
+
+        total_load_of_products = int(sum(
+            product.quantity for product in get_all_products_base_on_reservation
+        ))
+
+        if total_load_of_products > current_load_of_the_track:
+            messages.error(
+                self.request,
+                "Total products load exceeds the current truck's capacity. Please select a new truck with higher load capacity.",
+                extra_tags="danger",
+            )
+            return super().form_invalid(form)
+        
+        
         truck_info = form.cleaned_data['truck']
         TruckModel.objects.filter(
             id=truck_info.id
@@ -182,15 +202,25 @@ class ConfirmReservationView(CustomLoginRequiredMixin, UpdateView):
                 extra_tags="warning",
             )
         else:
+
+            get_product = ReservationProduct.objects.filter(
+                tied_with_reservation_of=self.kwargs['reservation_id']
+            )
+
+            time_reserved = form.instance.time_reservation.strftime("%I:%M %p")
+
+            product_info = ''
+            for product in get_product:
+                product_info += f"{product.product_name} (Quantity: {product.quantity} - {product.delivery_quantity_type})\n"
+
             mobile = form.instance.reserved_by.phone_number
             message = SERVER_SMS_MESSAGE_TEMPLATE.format(
                 client_fullname=form.instance.reserved_by.get_full_name(),
                 service_type=form.instance.reservation_type,
-                quantity=form.instance.quantity,
-                schedule_departure=form.instance.date_reserved,
+                product_info=product_info,
+                schedule_departure=f'{form.instance.date_reserved} {time_reserved}',
+                farm_address=form.instance.complete_address,
                 driver=form.instance.truck.driver.get_full_name(),
-                product=form.instance.product_name,
-                pickup_location=form.instance.reserved_by.address,
                 assigned_truck=form.instance.truck.plate_number,
             )
 
@@ -335,6 +365,24 @@ class UpdateReservationView(CustomLoginRequiredMixin, UpdateView):
     template_name = "update_template/reservation_update.html"
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
+        current_load_of_the_track = form.instance.truck.capacity
+
+        get_all_products_base_on_reservation = ReservationProduct.objects.filter(
+            tied_with_reservation_of=self.kwargs.get('reservation_id')
+        )
+
+        total_load_of_products = int(sum(
+            product.quantity for product in get_all_products_base_on_reservation
+        ))
+
+        if total_load_of_products > current_load_of_the_track:
+            messages.error(
+                self.request,
+                "Total products load exceeds the current truck's capacity. Please select a new truck with higher load capacity.",
+                extra_tags="danger",
+            )
+            return super().form_invalid(form)
+        
         messages.error(
             self.request,
             "You have successfully updated reservation, thank you.",
@@ -532,8 +580,6 @@ def generate_report(request):
             else end_date
         )
 
-        print('Date: ', start_date, end_date)
-
         query_reservation = ReservationModel.objects.filter(
             date_reserved__range=[start_date, end_date],
         ).order_by("-reserved_by__first_name")
@@ -611,28 +657,16 @@ def generate_report(request):
         for name, reservations in grouped_reservations.items():
             reservation_count = len(reservations)
 
-            data.append(
-                [
-                    name,
-                    reservations[0].reserved_by.phone_number,
-                    reservations[0].product_name,
-                    "Member" if reservations[0].date_reserved else "Non Member",
-                    "Delivered" if reservations[0].is_delivered else "Undelivered",
-                    reservations[0].reservation_status,
-                    (
-                        reservations[0].date_reserved.strftime("%Y-%m-%d")
-                        if reservations[0].date_reserved
-                        else "N/A"
-                    ),
-                ]
-            )
+            # Loop through each reservation's products
+            for reservation in reservations:
+                products = ReservationProduct.objects.filter(tied_with_reservation_of=reservation)
+                product_names = ", ".join([product.product_name for product in products])
 
-            for reservation in reservations[1:]:
                 data.append(
                     [
-                        "",
-                        "",
-                        reservation.product_name,
+                        name,
+                        reservation.reserved_by.phone_number,
+                        product_names,  # List of product names for this reservation
                         "Member" if reservation.date_reserved else "Non Member",
                         "Delivered" if reservation.is_delivered else "Undelivered",
                         reservation.reservation_status,

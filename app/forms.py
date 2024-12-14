@@ -136,13 +136,19 @@ class ConfirmReservationForm(forms.ModelForm):
         for field in self.fields.values():
             if isinstance(field.widget, forms.CheckboxInput):
                 field.widget.attrs.update({"class": ""})
+            
+            elif isinstance(field.widget, forms.Textarea):
+                field.widget.attrs.update({"rows": 2, "class": "form-control"})
+
             else:
                 field.widget.attrs.update({"class": "form-control"})
 
     class Meta:
         model = ReservationModel
         fields = [
+            "reserved_by",
             "reservation_status",
+            "complete_address",
             "truck",
             "date_reserved",
             "time_reservation",

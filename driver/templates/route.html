@@ -27,12 +27,6 @@
                         <label>Contact</label>
                         <input type="text" name="contact" id="contact" value="{{ reservation.reserved_by.phone_number }}" class="form-control">
                     </div>
-
-                    <div class="form-group">
-                        <label>Product</label>
-                        <input type="text" name="product_name" id="product_name" value="{{ reservation.product_name }}" class="form-control">
-                    </div>
-
                     
                     <div class="form-group">
                         <label>Date Reserved</label>
@@ -50,7 +44,7 @@
                 </form>
             </div>
             <div class="col-md-9">
-                <div id="map" style="width: 100%; height: 100%;"></div>
+                <div id="map" style="width: 100%; height: 100vh;"></div>
             </div>
         </div>
     </div>
@@ -104,7 +98,7 @@
             container: 'map',
             style: 'mapbox://styles/mapbox/satellite-streets-v12',
             center: [reservationLongitude, reservationLatitude],
-            zoom: 14
+            zoom: 12
         });
 
         new mapboxgl.Marker({ color: 'red' })
@@ -157,7 +151,7 @@
 
                     map.flyTo({
                         center: [(longitude + reservationLongitude) / 2, (latitude + reservationLatitude) / 2],
-                        zoom: 14,
+                        zoom: 8,
                         speed: 0.5,
                         bearing: -20,
                         pitch: 60,

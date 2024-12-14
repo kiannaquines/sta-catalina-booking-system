@@ -22,7 +22,7 @@
                   </label>
                 {% elif input.id_for_label == 'id_date_reserved' %}
                 <div class="form-group mb-2">
-                    {{ input.label }}
+                    <label for="{{ input.id_for_label }}" class="form-label">{{ input.label }}</label>
                     {{ input }}
                   </div>
                 {% else %}

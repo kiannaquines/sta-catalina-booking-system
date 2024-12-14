@@ -86,7 +86,7 @@ class ReservationModel(models.Model):
     complete_address = models.TextField(max_length=255, help_text="Complete address of the farm", null=True, blank=True)
     truck = models.ForeignKey(
         TruckModel,
-        limit_choices_to={"driver__user_type": "Driver"},
+        limit_choices_to={"driver__user_type": "Driver","is_reserved": False},
         on_delete=models.CASCADE,
         help_text="Truck to deliver",
         blank=True,

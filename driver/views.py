@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.views.generic import View
 from django.contrib import messages
 from app.mixins import CustomLoginRequiredMixin
-from app.models import ReservationModel
+from app.models import ReservationModel, TruckModel
 from django.db.models import Q
 from django.urls import reverse_lazy
 
@@ -48,6 +48,10 @@ class UpdateDeliveryStatus(CustomLoginRequiredMixin, View):
                         return HttpResponseRedirect(reverse_lazy("driver_page"))
 
                     reservation.is_delivered = not reservation.is_delivered
+                    TruckModel.objects.filter(
+                        driver=request.user,
+                    ).update(is_reserved=False)
+
                     reservation.save()
                     messages.success(
                         request,
