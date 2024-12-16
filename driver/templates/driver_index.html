@@ -19,7 +19,6 @@
                     <tr>
                         <th>Fullname</th>
                         <th>Name</th>
-                        <th>Product</th>
                         <th>Reservation</th>
                         <th>Delivery Status</th>
                         <th>Date Reserved</th>
@@ -34,7 +33,6 @@
                             <b>{{ item.truck.driver.get_full_name }}</b>
                             - {{ item.truck.plate_number }}
                         </td>
-                        <th>{{ item.product_name }}</th>
                         <td>
                             <span class="badge bg-primary text-white">{{ item.reservation_type }}</span>
                         </td>
@@ -50,6 +48,9 @@
                             </a>
                             <a href="{% url 'driver_route_page' reservation_id=item.id %}">
                                 <i class="typcn typcn-location-outline action-icon" style="font-size: 20px;"></i>
+                            </a>
+                            <a href="{% url 'driver_update_reservation_status' reservation_id=item.id %}">
+                                <i class="typcn typcn-edit action-icon" style="font-size: 20px;"></i>
                             </a>
                         </th>
                     </tr>

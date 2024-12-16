@@ -66,7 +66,9 @@ class ReservationModel(models.Model):
 
     RESERVATION_STATUS = (
         ("Pending", "Pending"),
-        ("Confirmed", "Confirmed"),
+        ("Confirmed by staff", "Confirmed by staff"),
+        ("For Delivery", "For Delivery"),
+        ("Delivered", "Delivered"),
         ("Cancelled", "Cancelled"),
     )
 

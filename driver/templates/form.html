@@ -1,0 +1,55 @@
+{% extends './includes/driver_base.html' %}
+{% load static %}
+
+{% block specific_css %}
+<link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
+<link href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.css" rel="stylesheet" />
+
+{% endblock %}
+
+{% block content %}
+<div class="az-content-breadcrumb">
+    <span>Dashboard</span>
+    <span>Tables</span>
+    <span>Create Reservation</span>
+</div>
+<h2 class="az-content-title">Update Reservations</h2>
+<div class="az-content-label mg-b-5">Update Reservation Status</div>
+<p class="mg-b-20">Update reservation information.</p>
+{% include './includes/driver_message.html' %}
+<div class="card">
+  <div class="card-body">
+      <div class="row">
+          <div class="col-md-12">
+              <form method="post">
+                  {% csrf_token %}
+              {% for input in form %}
+                  {% if input.id_for_label == 'id_is_delivered' %}
+                  <label class="ckbox form-label mt-2 mb-3">
+                      {{ input }}
+                      <span>{{ input.label }}</span>
+                      <small class="d-block text-muted mt-2">{{ input.help_text }}</small>
+                  </label>
+                  {% elif input.id_for_label == 'id_date_reserved' %}
+                  <div class="form-group mb-2 mt-2">
+                        <label for="{{ input.id_for_label }}" class="form-label">{{ input.label }}</label>
+                        {{ input }}
+                        <small class="d-block text-muted mt-1">{{ input.help_text }}</small>
+                  {% else %}
+                  <div class="form-group mt-2">
+                      <label for="{{ input.id_for_label }}" class="form-label">{{ input.label }}</label>
+                      {{ input }}
+                      <small class="text-muted">{{ input.help_text }}</small>
+                  </div>
+                  {% endif %}
+              {% endfor %}
+                  <div class="d-flex align-items-center">
+                      <button class="btn btn-az-primary btn-block">Create Reservation</button>
+                  </div>
+              </form>
+          </div>
+      </div>
+  </div>
+</div>
+</div>
+{% endblock %}

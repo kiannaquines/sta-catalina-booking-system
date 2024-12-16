@@ -1,12 +1,37 @@
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
-from django.views.generic import View
+from django.views.generic import View, UpdateView
 from django.contrib import messages
 from app.mixins import CustomLoginRequiredMixin
 from app.models import ReservationModel, TruckModel
 from django.db.models import Q
 from django.urls import reverse_lazy
 
+from app.forms import DriverReservationForm
+
+class DriverUpdateDeliveryStatus(CustomLoginRequiredMixin, UpdateView):
+    pk_url_kwarg = 'reservation_id'
+    template_name = 'form.html'
+    form_class = DriverReservationForm
+    model = ReservationModel
+    success_url = reverse_lazy('driver_page')
+
+    def form_valid(self, form) -> HttpResponse:
+        messages.success(
+            self.request,
+            "You have successfully updated the reservation status.",
+            extra_tags="primary",
+        )
+        return super().form_valid(form)
+
+    def form_invalid(self, form) -> HttpResponse:
+        messages.error( 
+            self.request,
+            "There was an error while updating status.",
+            extra_tags="primary",
+        )
+        return super().form_invalid(form)
+    
 
 class DriverPage(CustomLoginRequiredMixin, View):
     template_name = "driver_index.html"
@@ -15,8 +40,6 @@ class DriverPage(CustomLoginRequiredMixin, View):
         context = {}
         context["reservations"] = ReservationModel.objects.filter(
             Q(truck__driver=request.user),
-            Q(reservation_status=ReservationModel.RESERVATION_STATUS[1][0])
-            | Q(reservation_status=ReservationModel.RESERVATION_STATUS[0][0]),
         )
         return render(request, self.template_name, context)
 

@@ -3,6 +3,39 @@ from django.contrib.auth.forms import UserCreationForm
 from app.models import *
 
 
+class DriverReservationForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for field in self.fields.values():  
+            field.widget.attrs.update({"class": "form-control"})
+            
+    class Meta:
+        model = ReservationModel
+        fields = ('reservation_status',)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class LoginForm(forms.Form):
 
     username = forms.CharField(
